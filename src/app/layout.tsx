@@ -1,11 +1,12 @@
-"use client"
+"use client";
 // import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Provider } from 'react-redux';
-import store from '../store/store';
+import { Provider } from "react-redux";
+import store from "../store/store";
+import Providers2 from "./providers";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -28,22 +29,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-
     <Provider store={store}>
-         <html lang="en">
-     
-     <body >
-       <SidebarProvider>
-         <AppSidebar />
-         <main className="w-full" >
-           <SidebarTrigger />
-           {children}
-         </main>
-       </SidebarProvider>
-     </body>
-   </html>
+      <html lang="en">
+        <Providers2>
+          <body>
+            <SidebarProvider>
+              <AppSidebar />
 
+              <main className="w-full">
+                <SidebarTrigger />
+                {children}
+              </main>
+            </SidebarProvider>
+          </body>
+        </Providers2>
+      </html>
     </Provider>
- 
   );
 }
