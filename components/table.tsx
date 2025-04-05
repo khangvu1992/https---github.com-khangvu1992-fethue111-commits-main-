@@ -13,7 +13,7 @@ import { flexRender } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import axios from 'axios';
-import { TableHead, TableHeader, TableRow } from './ui/table';
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 
 export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -88,17 +88,17 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
                 </TableRow>
               ))}
             </TableHeader>
-        <tbody>
+        <TableBody>
           {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
+            <TableRow key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="border p-2">
+                <TableCell key={cell.id} className="border p-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
+        </TableBody>
       </table>
 
       <div className="flex items-center gap-2 mt-4">
