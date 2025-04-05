@@ -13,6 +13,7 @@ import { flexRender } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import axios from 'axios';
+import { TableHead, TableHeader, TableRow } from './ui/table';
 
 export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -53,29 +54,40 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   return (
     <div className="p-4">
       <table className="border w-full">
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id} className="border p-2 text-left">
-                  {header.isPlaceholder
-                    ? null
-                    : header.column.getCanSort()
-                    ? (
+      <TableHeader>
+              {table.getHeaderGroups().map(headerGroup => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map(header => {
+                    return (
+                      <TableHead className='size-min'  key={header.id} colSpan={header.colSpan}>
                         <div
-                          className="cursor-pointer"
-                          onClick={header.column.getToggleSortingHandler()}
+                          {...{
+                            className: header.column.getCanSort()
+                              ? 'cursor-pointer select-none'
+                              : '',
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
                         >
-                          {header.column.columnDef.header as string}
-                          {header.column.getIsSorted() === 'asc' ? ' 🔼' : header.column.getIsSorted() === 'desc' ? ' 🔽' : ''}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: ' 🔼',
+                            desc: ' 🔽',
+                          }[header.column.getIsSorted() as string] ?? null}
+                          {header.column.getCanFilter() ? (
+                            <div>
+                              {/* <Filter column={header.column} table={table} /> */}
+                            </div>
+                          ) : null}
                         </div>
-                      )
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
+                      </TableHead>
+                    )
+                  })}
+                </TableRow>
               ))}
-            </tr>
-          ))}
-        </thead>
+            </TableHeader>
         <tbody>
           {table.getRowModel().rows.map(row => (
             <tr key={row.id}>
