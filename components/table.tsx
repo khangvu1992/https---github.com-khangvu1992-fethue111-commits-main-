@@ -14,23 +14,84 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { Person } from '@/makeData'
-import React from 'react'
-import { TableBody, TableCell, TableHeader, TableRow } from './ui/table'
+import React, { useEffect } from 'react'
+import { TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table'
+import { useDispatch } from 'react-redux';
+import { setDataFromChild } from '@/src/store/dataslice'
+import axios from 'axios'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 
 
-export default  function MyTable({
-    data,
+export default  function MyTable( {
+    // data,
     columns,
   }: {
-    data: Person[]
-    columns: ColumnDef<Person>[]
+    // data: any[]
+    columns: ColumnDef<any>[]
   }) {
+
+    const [data, setData] = React.useState([]);
+    const [totalPages, setTotalPages] = React.useState(0);
+
+    const dispatch = useDispatch();
+
     const [pagination, setPagination] = React.useState<PaginationState>({
       pageIndex: 0,
       pageSize: 10,
     })
+
+
+    const fetchData = async (pageIndex: number, pageSize: number) => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/excel_search', {
+          params: {
+            page: pageIndex,
+            size: pageSize,
+          },
+        });
   
+        const { content, totalPages, totalElements } = response.data;
+        setData(content); 
+        setTotalPages(totalPages); 
+        // dispatch(setDataFromChild(content));
+  
+        setPagination(prev => ({
+          ...prev,
+          pageIndex,
+          pageSize,
+          pageCount: totalPages,
+        }));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+
+    useEffect(() => {
+   
+      // Function to fetch data from the backend with pagination
+
+  
+      fetchData(0,10);
+    }, []);
+
+
+
+    const handleSetPage = (updater: PaginationState | ((prev: PaginationState) => PaginationState)) => {
+      if (typeof updater === 'function') {
+        const newPagination = updater(pagination);
+        setPagination(newPagination);
+        // fetchData(newPagination.pageIndex, newPagination.pageSize);
+      } else {
+        setPagination(updater);
+        // fetchData(updater.pageIndex, updater.pageSize);
+      }
+    };
+    
+ 
+
+
     const table = useReactTable({
       columns,
       data,
@@ -39,12 +100,17 @@ export default  function MyTable({
       getSortedRowModel: getSortedRowModel(),
       getFilteredRowModel: getFilteredRowModel(),
       getPaginationRowModel: getPaginationRowModel(),
-      onPaginationChange: setPagination,
+      onPaginationChange: handleSetPage,
       //no need to pass pageCount or rowCount with client-side pagination as it is calculated automatically
       state: {
         pagination,
       },
       // autoResetPageIndex: false, // turn off page index reset when sorting or filtering
+
+  
+
+
+
     })
     return (
         <div className="p-2">
@@ -52,10 +118,10 @@ export default  function MyTable({
           <table>
             <TableHeader>
               {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
+                <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map(header => {
                     return (
-                      <th key={header.id} colSpan={header.colSpan}>
+                      <TableHead className='size-min'  key={header.id} colSpan={header.colSpan}>
                         <div
                           {...{
                             className: header.column.getCanSort()
@@ -78,10 +144,10 @@ export default  function MyTable({
                             </div>
                           ) : null}
                         </div>
-                      </th>
+                      </TableHead>
                     )
                   })}
-                </tr>
+                </TableRow>
               ))}
             </TableHeader>
             <TableBody>
@@ -90,7 +156,7 @@ export default  function MyTable({
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map(cell => {
                       return (
-                        <TableCell key={cell.id}>
+                        <TableCell className='size-min' key={cell.id}>
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -135,8 +201,9 @@ export default  function MyTable({
             </button>
             <span className="flex items-center gap-1">
               <div>Page</div>
+              2222222
               <strong>
-                {table.getState().pagination.pageIndex + 1} of{' '}
+                {table.getState().pagination.pageIndex + 1} of{totalPages}
                 {table.getPageCount().toLocaleString()}
               </strong>
             </span>
@@ -152,7 +219,7 @@ export default  function MyTable({
                   table.setPageIndex(page)
                 }}
                 className="border p-1 rounded w-16"
-              />
+              />ttttttttttttttt
             </span>
             <select
               value={table.getState().pagination.pageSize}
@@ -160,7 +227,7 @@ export default  function MyTable({
                 table.setPageSize(Number(e.target.value))
               }}
             >
-              {[10, 20, 30, 40, 50].map(pageSize => (
+              {[10, 20, 30, 40, 50,100].map(pageSize => (
                 <option key={pageSize} value={pageSize}>
                   Show {pageSize}
                 </option>
@@ -175,26 +242,7 @@ export default  function MyTable({
 
 
 
-{/* 
-          <Table>
-  <TableCaption>A list of your recent invoices.</TableCaption>
-  <TableHeader>
-    <TableRow>
-      <TableHead className="w-[100px]">Invoice</TableHead>
-      <TableHead>Status</TableHead>
-      <TableHead>Method</TableHead>
-      <TableHead className="text-right">Amount</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>
-    <TableRow>
-      <TableCell className="font-medium">INV001</TableCell>
-      <TableCell>Paid</TableCell>
-      <TableCell>Credit Card</TableCell>
-      <TableCell className="text-right">$250.00</TableCell>
-    </TableRow>
-  </TableBody>
-</Table> */}
+
         </div>
       )
     }
@@ -213,7 +261,7 @@ export default  function MyTable({
       
         const columnFilterValue = column.getFilterValue()
       
-        return typeof firstValue === 'number' ? (
+        return typeof firstValue === null ? (
           <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
             <input
               type="number"
@@ -242,7 +290,7 @@ export default  function MyTable({
           </div>
         ) : (
           <input
-            className="w-36 border shadow rounded"
+            className="w-20 border shadow rounded"
             onChange={e => column.setFilterValue(e.target.value)}
             onClick={e => e.stopPropagation()}
             placeholder={`Search...`}
