@@ -24,6 +24,8 @@ import {
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { debounce } from 'lodash';
+
 
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 const fetchData = async (
@@ -36,13 +38,16 @@ const fetchData = async (
     return acc;
   }, {});
 
-  const res = await axios.get("http://localhost:8080/api/excel_search", {
-    params: {
-      page: pageIndex,
-      size: pageSize,
-      ...filterParams,
-    },
-  });
+  const res = await axios.post(
+    "http://localhost:8080/api/excel_search", // URL
+    filterParams, // Body (filters sẽ được gửi trong body của POST request)
+    {
+      params: {  // Query params (page, size)
+        page: pageIndex,
+        size: pageSize
+      }
+    }
+  );
 
   return res.data; // Giả định là { content: [], totalPages, totalElements }
 };
