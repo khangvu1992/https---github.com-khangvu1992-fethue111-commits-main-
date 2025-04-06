@@ -70,163 +70,232 @@ export default function dashboard() {
   // );
 
 
+  // const columns = React.useMemo<ColumnDef<any>[]>(
+  //   () => [
+  //     {
+  //       accessorKey: "id", // id
+  //       header: () => "ID",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "trangthaitk", // trangthaitk
+  //       header: () => "Trạng thái TK",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "bpkthsdt", // bpkthsdt
+  //       header: () => "BPKTHSDT",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "bptq", // bptq
+  //       header: () => "BPTQ",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "ptvc", // ptvc
+  //       header: () => "PTVC",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "malh", // malh
+  //       header: () => "Mã LH",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "ngayDk", // ngayDk
+  //       header: () => "Ngày DK",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "hourDk", // hourDk
+  //       header: () => "Giờ DK",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "ngayThaydoiDk", // ngayThaydoiDk
+  //       header: () => "Ngày Thay Đổi DK",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "hourThaydoiDk", // hourThaydoiDk
+  //       header: () => "Giờ Thay Đổi DK",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "tenDoanhnghiep", // tenDoanhnghiep
+  //       header: () => "Tên Doanh Nghiệp",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "sodienthoai", // sodienthoai
+  //       header: () => "Số Điện Thoại",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "tenDoitacnuocngoai", // tenDoitacnuocngoai
+  //       header: () => "Tên Đối Tác Nước Ngoài",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "vandon01", // vandon01
+  //       header: () => "Vận Đơn 01",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "soluongkienhang", // soluongkienhang
+  //       header: () => "Số Lượng Kiện Hàng",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "grossweight", // grossweight
+  //       header: () => "Trọng Lượng Tổng",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "maDiadiemdohang", // maDiadiemdohang
+  //       header: () => "Mã Địa Điểm Đó Hàng",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "maDiadiemxephang", // maDiadiemxephang
+  //       header: () => "Mã Địa Điểm Xếp Hàng",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "tenPhuongtienvanchuyen", // tenPhuongtienvanchuyen
+  //       header: () => "Tên Phương Tiện Vận Chuyển",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "ngayHangDen", // ngayHangDen
+  //       header: () => "Ngày Hàng Đến",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "tongTriGiaHoaDon", // tongTriGiaHoaDon
+  //       header: () => "Tổng Trị Giá Hóa Đơn",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "tongTriGiaTinhThue", // tongTriGiaTinhThue
+  //       header: () => "Tổng Trị Giá Tính Thuế",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "hsCode", // hsCode
+  //       header: () => "HS Code",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "moTaHangHoa", // moTaHangHoa
+  //       header: () => "Mô Tả Hàng Hóa",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "soLuongHanghoa", // soLuongHanghoa
+  //       header: () => "Số Lượng Hàng Hóa",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "triGiaHoaDon", // triGiaHoaDon
+  //       header: () => "Trị Giá Hóa Đơn",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "dongiaHoadon", // dongiaHoadon
+  //       header: () => "Đơn Giá Hóa Đơn",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "maTienteHoadon", // maTienteHoadon
+  //       header: () => "Mã Tiền Tệ Hóa Đơn",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "xuatxu", // xuatxu
+  //       header: () => "Xuất Xứ",
+  //       footer: (props) => props.column.id,
+  //     },
+  //     {
+  //       accessorKey: "maVanbanphapquy", // maVanbanphapquy
+  //       header: () => "Mã Văn Bản Pháp Quy",
+  //       footer: (props) => props.column.id,
+  //     },
+  //   ],
+  //   []
+  // );
+  
   const columns = React.useMemo<ColumnDef<any>[]>(
     () => [
-      {
-        accessorKey: "id", // id
-        header: () => "ID",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "trangthaitk", // trangthaitk
-        header: () => "Trạng thái TK",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "bpkthsdt", // bpkthsdt
-        header: () => "BPKTHSDT",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "bptq", // bptq
-        header: () => "BPTQ",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "ptvc", // ptvc
-        header: () => "PTVC",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "malh", // malh
-        header: () => "Mã LH",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "ngayDk", // ngayDk
-        header: () => "Ngày DK",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "hourDk", // hourDk
-        header: () => "Giờ DK",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "ngayThaydoiDk", // ngayThaydoiDk
-        header: () => "Ngày Thay Đổi DK",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "hourThaydoiDk", // hourThaydoiDk
-        header: () => "Giờ Thay Đổi DK",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "tenDoanhnghiep", // tenDoanhnghiep
-        header: () => "Tên Doanh Nghiệp",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "sodienthoai", // sodienthoai
-        header: () => "Số Điện Thoại",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "tenDoitacnuocngoai", // tenDoitacnuocngoai
-        header: () => "Tên Đối Tác Nước Ngoài",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "vandon01", // vandon01
-        header: () => "Vận Đơn 01",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "soluongkienhang", // soluongkienhang
-        header: () => "Số Lượng Kiện Hàng",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "grossweight", // grossweight
-        header: () => "Trọng Lượng Tổng",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "maDiadiemdohang", // maDiadiemdohang
-        header: () => "Mã Địa Điểm Đó Hàng",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "maDiadiemxephang", // maDiadiemxephang
-        header: () => "Mã Địa Điểm Xếp Hàng",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "tenPhuongtienvanchuyen", // tenPhuongtienvanchuyen
-        header: () => "Tên Phương Tiện Vận Chuyển",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "ngayHangDen", // ngayHangDen
-        header: () => "Ngày Hàng Đến",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "tongTriGiaHoaDon", // tongTriGiaHoaDon
-        header: () => "Tổng Trị Giá Hóa Đơn",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "tongTriGiaTinhThue", // tongTriGiaTinhThue
-        header: () => "Tổng Trị Giá Tính Thuế",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "hsCode", // hsCode
-        header: () => "HS Code",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "moTaHangHoa", // moTaHangHoa
-        header: () => "Mô Tả Hàng Hóa",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "soLuongHanghoa", // soLuongHanghoa
-        header: () => "Số Lượng Hàng Hóa",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "triGiaHoaDon", // triGiaHoaDon
-        header: () => "Trị Giá Hóa Đơn",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "dongiaHoadon", // dongiaHoadon
-        header: () => "Đơn Giá Hóa Đơn",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "maTienteHoadon", // maTienteHoadon
-        header: () => "Mã Tiền Tệ Hóa Đơn",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "xuatxu", // xuatxu
-        header: () => "Xuất Xứ",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "maVanbanphapquy", // maVanbanphapquy
-        header: () => "Mã Văn Bản Pháp Quy",
-        footer: (props) => props.column.id,
-      },
+      { accessorKey: "id", header: () => "ID", footer: (props) => props.column.id },
+      { accessorKey: "Tkid", header: () => "TKID", footer: (props) => props.column.id },
+      { accessorKey: "Sotk", header: () => "SOTK", footer: (props) => props.column.id },
+      { accessorKey: "Mahq", header: () => "MAHQ", footer: (props) => props.column.id },
+      { accessorKey: "trangthaitk", header: () => "Trạng thái TK", footer: (props) => props.column.id },
+      { accessorKey: "bpkthsdt", header: () => "BPKTHSDT", footer: (props) => props.column.id },
+      { accessorKey: "bptq", header: () => "BPTQ", footer: (props) => props.column.id },
+      { accessorKey: "ptvc", header: () => "PTVC", footer: (props) => props.column.id },
+      { accessorKey: "malh", header: () => "Mã LH", footer: (props) => props.column.id },
+      { accessorKey: "ngayDk", header: () => "Ngày DK", footer: (props) => props.column.id },
+      { accessorKey: "hourDk", header: () => "Giờ DK", footer: (props) => props.column.id },
+      { accessorKey: "ngayThaydoiDk", header: () => "Ngày Thay Đổi DK", footer: (props) => props.column.id },
+      { accessorKey: "hourThaydoiDk", header: () => "Giờ Thay Đổi DK", footer: (props) => props.column.id },
+      { accessorKey: "masothueKbhq", header: () => "Mã Số Thuế KBHQ", footer: (props) => props.column.id },
+      { accessorKey: "tenDoanhnghiep", header: () => "Tên Doanh Nghiệp", footer: (props) => props.column.id },
+      { accessorKey: "sodienthoai", header: () => "Số Điện Thoại", footer: (props) => props.column.id },
+      { accessorKey: "tenDoanhnghiepUythac", header: () => "Tên Doanh Nghiệp Ủy Thác", footer: (props) => props.column.id },
+      { accessorKey: "tenDoitacnuocngoai", header: () => "Tên Đối Tác Nước Ngoài", footer: (props) => props.column.id },
+      { accessorKey: "maquocgiaDoitacnuocngoai", header: () => "Mã Quốc Gia Đối Tác Nước Ngoài", footer: (props) => props.column.id },
+      { accessorKey: "vandon01", header: () => "Vận Đơn 01", footer: (props) => props.column.id },
+      { accessorKey: "vandon02", header: () => "Vận Đơn 02", footer: (props) => props.column.id },
+      { accessorKey: "vandon03", header: () => "Vận Đơn 03", footer: (props) => props.column.id },
+      { accessorKey: "vandon04", header: () => "Vận Đơn 04", footer: (props) => props.column.id },
+      { accessorKey: "vandon05", header: () => "Vận Đơn 05", footer: (props) => props.column.id },
+      { accessorKey: "soluongkienhang", header: () => "Số Lượng Kiện Hàng", footer: (props) => props.column.id },
+      { accessorKey: "maDvtKienhang", header: () => "Mã ĐVT Kiện Hàng", footer: (props) => props.column.id },
+      { accessorKey: "grossweight", header: () => "Trọng Lượng Tổng", footer: (props) => props.column.id },
+      { accessorKey: "maDvtGw", header: () => "Mã ĐVT GW", footer: (props) => props.column.id },
+      { accessorKey: "soluongContainer", header: () => "Số Lượng Container", footer: (props) => props.column.id },
+      { accessorKey: "maDiadiemdohang", header: () => "Mã Địa Điểm Đó Hàng", footer: (props) => props.column.id },
+      { accessorKey: "maDiadiemxephang", header: () => "Mã Địa Điểm Xếp Hàng", footer: (props) => props.column.id },
+      { accessorKey: "tenPhuongtienvanchuyen", header: () => "Tên Phương Tiện Vận Chuyển", footer: (props) => props.column.id },
+      { accessorKey: "ngayHangDen", header: () => "Ngày Hàng Đến", footer: (props) => props.column.id },
+      { accessorKey: "phuongThucThanhToan", header: () => "Phương Thức Thanh Toán", footer: (props) => props.column.id },
+      { accessorKey: "tongTriGiaHoaDon", header: () => "Tổng Trị Giá Hóa Đơn", footer: (props) => props.column.id },
+      { accessorKey: "tongTriGiaTinhThue", header: () => "Tổng Trị Giá Tính Thuế", footer: (props) => props.column.id },
+      { accessorKey: "tongTienThue", header: () => "Tổng Tiền Thuế", footer: (props) => props.column.id },
+      { accessorKey: "tongSoDonghang", header: () => "Tổng Số Dòng Hàng", footer: (props) => props.column.id },
+      { accessorKey: "ngayCapPhep", header: () => "Ngày Cấp Phép", footer: (props) => props.column.id },
+      { accessorKey: "gioCapPhep", header: () => "Giờ Cấp Phép", footer: (props) => props.column.id },
+      { accessorKey: "ngayHoanthanhKiemtra", header: () => "Ngày Hoàn Thành Kiểm Tra", footer: (props) => props.column.id },
+      { accessorKey: "gioHoanthanhKiemtra", header: () => "Giờ Hoàn Thành Kiểm Tra", footer: (props) => props.column.id },
+      { accessorKey: "ngayHuyTk", header: () => "Ngày Hủy TK", footer: (props) => props.column.id },
+      { accessorKey: "gioHuyTk", header: () => "Giờ Hủy TK", footer: (props) => props.column.id },
+      { accessorKey: "tenNguoiphutrachKiemtrahoso", header: () => "Tên Người Phụ Trách Kiểm Tra Hồ Sơ", footer: (props) => props.column.id },
+      { accessorKey: "tenNguoiphutrachKiemhoa", header: () => "Tên Người Phụ Trách Kiểm Hóa", footer: (props) => props.column.id },
+      { accessorKey: "hsCode", header: () => "HS Code", footer: (props) => props.column.id },
+      { accessorKey: "moTaHangHoa", header: () => "Mô Tả Hàng Hóa", footer: (props) => props.column.id },
+      { accessorKey: "soLuongHanghoa", header: () => "Số Lượng Hàng Hóa", footer: (props) => props.column.id },
+      { accessorKey: "maDvtHanghoa", header: () => "Mã ĐVT Hàng Hóa", footer: (props) => props.column.id },
+      { accessorKey: "triGiaHoaDon", header: () => "Trị Giá Hóa Đơn", footer: (props) => props.column.id },
+      { accessorKey: "dongiaHoadon", header: () => "Đơn Giá Hóa Đơn", footer: (props) => props.column.id },
+      { accessorKey: "maTienteHoadon", header: () => "Mã Tiền Tệ Hóa Đơn", footer: (props) => props.column.id },
+      { accessorKey: "donviDongiaTiente", header: () => "Đơn Vị Đơn Giá Tiền Tệ", footer: (props) => props.column.id },
+      { accessorKey: "triGiaTinhThueS", header: () => "Trị Giá Tính Thuế S", footer: (props) => props.column.id },
+      { accessorKey: "triGiaTinhThueM", header: () => "Trị Giá Tính Thuế M", footer: (props) => props.column.id },
+      { accessorKey: "dongiaTinhthue", header: () => "Đơn Giá Tính Thuế", footer: (props) => props.column.id },
+      { accessorKey: "thuesuatNhapkhau", header: () => "Thuế Suất Nhập Khẩu", footer: (props) => props.column.id },
+      { accessorKey: "tienThueNhapkhau", header: () => "Tiền Thuế Nhập Khẩu", footer: (props) => props.column.id },
+      { accessorKey: "xuatxu", header: () => "Xuất Xứ", footer: (props) => props.column.id },
+      { accessorKey: "maVanbanphapquy", header: () => "Mã Văn Bản Pháp Quy", footer: (props) => props.column.id },
+      { accessorKey: "phanloaiGiayphepNk", header: () => "Phân Loại Giấy Phép NK", footer: (props) => props.column.id },
+      { accessorKey: "maBieuthueNk", header: () => "Mã Biểu Thuế NK", footer: (props) => props.column.id },
+      { accessorKey: "maMiengiamThue", header: () => "Mã Miễn Giảm Thuế", footer: (props) => props.column.id },
     ],
     []
   );
   
-
 
 
 

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ColumnDef,
@@ -7,15 +7,42 @@ import {
   getSortedRowModel,
   getFilteredRowModel,
   useReactTable,
-  Column,
   Table,
-} from '@tanstack/react-table';
-import { flexRender } from '@tanstack/react-table';
+  Column,
+} from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
+import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useState } from "react";
+import axios from "axios";
+import {
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
-import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import axios from 'axios';
-import { TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
+// Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
+const fetchData = async (
+  pageIndex: number,
+  pageSize: number,
+  filters: Array<{ columnId: string; value: any }>
+) => {
+  const filterParams = filters.reduce<Record<string, any>>((acc, filter) => {
+    acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
+    return acc;
+  }, {});
+
+  const res = await axios.get("http://localhost:8080/api/excel_search", {
+    params: {
+      page: pageIndex,
+      size: pageSize,
+      ...filterParams,
+    },
+  });
+
+  return res.data; // Giả định là { content: [], totalPages, totalElements }
+};
 
 export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -23,20 +50,44 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
     pageSize: 10,
   });
 
-  // Call API with TanStack Query
-  const { data, isFetching } = useQuery({
-    queryKey: ['table-data', pagination.pageIndex, pagination.pageSize],
-    queryFn: async () => {
-      const res = await axios.get('http://localhost:8080/api/excel_search', {
-        params: {
-          page: pagination.pageIndex,
-          size: pagination.pageSize,
-        },
-      });
-      return res.data; // assumed { content: [], totalPages, totalElements }
-    },
-    // keepPreviousData: true,
+  const [filters, setFilters] = useState<
+    Array<{ columnId: string; value: any }>
+  >([]);
+
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: [
+      "table-data",
+      pagination.pageIndex,
+      pagination.pageSize,
+      filters,
+    ], // Thêm bộ lọc vào queryKey để tái tải lại khi bộ lọc thay đổi
+    queryFn: () =>
+      fetchData(pagination.pageIndex, pagination.pageSize, filters),
+    staleTime: 1000, // Dữ liệu sẽ vẫn được coi là mới trong 5 giây
   });
+
+  // Handle filter change and trigger the API call
+  const handleFilterChange = (value: string, columnId: string) => {
+    table.getColumn(columnId)?.setFilterValue(value);
+
+    // Update filter state
+    setFilters((oldFilters) => {
+      const newFilters = [...oldFilters];
+      const index = newFilters.findIndex(
+        (filter) => filter.columnId === columnId
+      );
+
+      if (index >= 0) {
+        newFilters[index].value = value; // Update filter value
+      } else {
+        newFilters.push({ columnId, value }); // Add new filter
+      }
+      console.log("filters", filters);
+      console.log("newFilters", newFilters);
+
+      return newFilters;
+    });
+  };
 
   const table = useReactTable({
     data: data?.content ?? [],
@@ -50,50 +101,54 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    debugTable: true,
   });
 
   return (
     <div className="p-4">
       <table className="border w-full">
-      <TableHeader>
-              {table.getHeaderGroups().map(headerGroup => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map(header => {
-                    return (
-                      <TableHead className='size-min'  key={header.id} colSpan={header.colSpan}>
-                        <div
-                          {...{
-                            className: header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : '',
-                            onClick: header.column.getToggleSortingHandler(),
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} colSpan={header.colSpan}>
+                  <div
+                    className={
+                      header.column.getCanSort()
+                        ? "cursor-pointer select-none"
+                        : ""
+                    }
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+
+                    {header.column.getCanFilter() && (
+                      <div>
+                        <input
+                          type="text"
+                          value={
+                            (header.column.getFilterValue() as string) ?? ""
+                          }
+                          onChange={(e) => {
+                            handleFilterChange(e.target.value, header.id); // Call the handler
                           }}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {{
-                            asc: ' 🔼',
-                            desc: ' 🔽',
-                          }[header.column.getIsSorted() as string] ?? null}
-                          {header.column.getCanFilter() ? (
-                            <div>
-                              <Filter column={header.column} table={table} />
-                            </div>
-                          ) : null}
-                        </div>
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
+                          placeholder="Search..."
+                        />
+                      </div>
+                    )}
+                  </div>
+                </TableHead>
               ))}
-            </TableHeader>
+            </TableRow>
+          ))}
+        </TableHeader>
+
         <TableBody>
-          {table.getRowModel().rows.map(row => (
+          {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
-              {row.getVisibleCells().map(cell => (
+              {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id} className="border p-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
@@ -103,109 +158,80 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
         </TableBody>
       </table>
 
-      <div className="flex items-center gap-2 mt-4">
-        <button onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
-          {'<<'}
-        </button>
-        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-          {'<'}
-        </button>
-        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          {'>'}
-        </button>
-        <button onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
-          {'>>'}
-        </button>
-
-        <span>
-          Page{' '}
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of {data?.totalPages}
-          </strong>
-        </span>
-
-        <span>
-          | Go to page:{' '}
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={e => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border rounded w-16 p-1"
-          />
-        </span>
-
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={e => table.setPageSize(Number(e.target.value))}
-        >
-          {[10, 20, 30, 50, 100].map(size => (
-            <option key={size} value={size}>
-              Show {size}
-            </option>
-          ))}
-        </select>
-
-        {isFetching && <span className="ml-2 text-sm">Loading...</span>}
-      </div>
+      <PaginationControls table={table} data={data} isFetching={isFetching} />
     </div>
   );
 }
 
-
-function Filter({
-  column,
+// Pagination controls component
+function PaginationControls({
   table,
+  data,
+  isFetching,
 }: {
-  column: Column<any, any>
-  table: Table<any>
+  table: Table<any>;
+  data: any;
+  isFetching: boolean;
 }) {
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id)
+  return (
+    <div className="flex items-center gap-2 mt-4">
+      <button
+        onClick={() => table.setPageIndex(0)}
+        disabled={!table.getCanPreviousPage()}
+      >
+        {"<<"}
+      </button>
+      <button
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+      >
+        {"<"}
+      </button>
+      <button
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+      >
+        {">"}
+      </button>
+      <button
+        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+        disabled={!table.getCanNextPage()}
+      >
+        {">>"}
+      </button>
 
-  const columnFilterValue = column.getFilterValue()
+      <span>
+        Page{" "}
+        <strong>
+          {table.getState().pagination.pageIndex + 1} of {data?.totalPages}
+        </strong>
+      </span>
 
-  return typeof firstValue === null ? (
-    <div className="flex space-x-2" onClick={e => e.stopPropagation()}>
-      <input
-        type="number"
-        value={(columnFilterValue as [number, number])?.[0] ?? ''}
-        onChange={e =>
-          column.setFilterValue((old: [number, number]) => [
-            e.target.value,
-            old?.[1],
-          ])
-        }
-        placeholder={`Min`}
-        className="w-24 border shadow rounded"
-      />
-      <input
-        type="number"
-        value={(columnFilterValue as [number, number])?.[1] ?? ''}
-        onChange={e =>
-          column.setFilterValue((old: [number, number]) => [
-            old?.[0],
-            e.target.value,
-          ])
-        }
-        placeholder={`Max`}
-        className="w-24 border shadow rounded"
-      />
+      <span>
+        | Go to page:{" "}
+        <input
+          type="number"
+          defaultValue={table.getState().pagination.pageIndex + 1}
+          onChange={(e) => {
+            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+            table.setPageIndex(page);
+          }}
+          className="border rounded w-16 p-1"
+        />
+      </span>
+
+      <select
+        value={table.getState().pagination.pageSize}
+        onChange={(e) => table.setPageSize(Number(e.target.value))}
+      >
+        {[10, 20, 30, 50, 100].map((size) => (
+          <option key={size} value={size}>
+            Show {size}
+          </option>
+        ))}
+      </select>
+
+      {isFetching && <span className="ml-2 text-sm">Loading...</span>}
     </div>
-  ) : (
-    <input
-      className="w-20 border shadow rounded"
-      onChange={e => column.setFilterValue(e.target.value)}
-      onClick={e => e.stopPropagation()}
-      placeholder={`Search...`}
-      type="text"
-      value={(columnFilterValue ?? '') as string}
-    />
-  )
-
-
-
+  );
 }
