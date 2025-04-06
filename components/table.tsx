@@ -21,6 +21,9 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 const fetchData = async (
@@ -99,8 +102,7 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
     manualPagination: true,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+
   });
 
   return (
@@ -117,7 +119,7 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
                         ? "cursor-pointer select-none"
                         : ""
                     }
-                    onClick={header.column.getToggleSortingHandler()}
+                    // onClick={header.column.getToggleSortingHandler()}
                   >
                     {flexRender(
                       header.column.columnDef.header,
@@ -174,64 +176,79 @@ function PaginationControls({
   isFetching: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2 mt-4">
-      <button
+    <div className="flex flex-wrap items-center gap-3 mt-4">
+      <Button
+        variant="outline"
+        size="icon"
         onClick={() => table.setPageIndex(0)}
         disabled={!table.getCanPreviousPage()}
       >
         {"<<"}
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
         onClick={() => table.previousPage()}
         disabled={!table.getCanPreviousPage()}
       >
         {"<"}
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
         onClick={() => table.nextPage()}
         disabled={!table.getCanNextPage()}
       >
         {">"}
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
         onClick={() => table.setPageIndex(table.getPageCount() - 1)}
         disabled={!table.getCanNextPage()}
       >
         {">>"}
-      </button>
-
-      <span>
-        Page{" "}
+      </Button>
+  
+      <span className="text-sm">
+        Trang{" "}
         <strong>
-          {table.getState().pagination.pageIndex + 1} of {data?.totalPages}
+          {table.getState().pagination.pageIndex + 1} / {data?.totalPages}
         </strong>
       </span>
-
-      <span>
-        | Go to page:{" "}
-        <input
+  
+      <div className="flex items-center gap-2">
+        <span className="text-sm">| Đến trang:</span>
+        <Input
           type="number"
+          min={1}
+          max={data?.totalPages}
+          className="w-20"
           defaultValue={table.getState().pagination.pageIndex + 1}
           onChange={(e) => {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
             table.setPageIndex(page);
           }}
-          className="border rounded w-16 p-1"
         />
-      </span>
-
-      <select
-        value={table.getState().pagination.pageSize}
-        onChange={(e) => table.setPageSize(Number(e.target.value))}
+      </div>
+  
+      <Select
+        value={String(table.getState().pagination.pageSize)}
+        onValueChange={(value) => table.setPageSize(Number(value))}
       >
-        {[10, 20, 30, 50, 100].map((size) => (
-          <option key={size} value={size}>
-            Show {size}
-          </option>
-        ))}
-      </select>
-
-      {isFetching && <span className="ml-2 text-sm">Loading...</span>}
+        <SelectTrigger className="w-[140px]">
+          <SelectValue placeholder="Số dòng / trang" />
+        </SelectTrigger>
+        <SelectContent>
+          {[10, 20, 30, 50, 100].map((size) => (
+            <SelectItem key={size} value={String(size)}>
+              {`Hiển thị ${size}`}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+  
+      {isFetching && <span className="ml-2 text-sm text-muted-foreground">Đang tải...</span>}
     </div>
   );
 }
