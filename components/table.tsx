@@ -27,8 +27,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { debounce } from 'lodash';
 
 
+// Hàm debounce cho queryFn
+const debouncedFetchData = debounce( (pageIndex, pageSize, filters) => {
+  console.log("Fetching data with filters:", filters);
+  return  fetchData(pageIndex, pageSize, filters);
+}, 500);  // Đặt độ trễ là 500ms
+
+
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
-const fetchData = async (
+const fetchData =  async (
   pageIndex: number,
   pageSize: number,
   filters: Array<{ columnId: string; value: any }>
@@ -69,8 +76,8 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
       pagination.pageSize,
       filters,
     ], // Thêm bộ lọc vào queryKey để tái tải lại khi bộ lọc thay đổi
-    queryFn: () =>
-      fetchData(pagination.pageIndex, pagination.pageSize, filters),
+    queryFn:  () =>
+      debouncedFetchData(pagination.pageIndex, pagination.pageSize, filters),
     staleTime: 1000, // Dữ liệu sẽ vẫn được coi là mới trong 5 giây
   });
 
@@ -90,8 +97,6 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
       } else {
         newFilters.push({ columnId, value }); // Add new filter
       }
-      console.log("filters", filters);
-      console.log("newFilters", newFilters);
 
       return newFilters;
     });
