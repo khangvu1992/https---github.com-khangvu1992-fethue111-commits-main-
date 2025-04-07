@@ -23,41 +23,18 @@ import {
 } from "./ui/table";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { debounce } from 'lodash';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { debounce } from "lodash";
 
-
-// Hàm debounce cho queryFn
-const debouncedFetchData = debounce( (pageIndex, pageSize, filters) => {
-  console.log("Fetching data with filters:", filters);
-  return  fetchData(pageIndex, pageSize, filters);
-}, 500);  // Đặt độ trễ là 500ms
 
 
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
-const fetchData =  async (
-  pageIndex: number,
-  pageSize: number,
-  filters: Array<{ columnId: string; value: any }>
-) => {
-  const filterParams = filters.reduce<Record<string, any>>((acc, filter) => {
-    acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
-    return acc;
-  }, {});
-
-  const res = await axios.post(
-    "http://localhost:8080/api/excel_search", // URL
-    filterParams, // Body (filters sẽ được gửi trong body của POST request)
-    {
-      params: {  // Query params (page, size)
-        page: pageIndex,
-        size: pageSize
-      }
-    }
-  );
-
-  return res.data; // Giả định là { content: [], totalPages, totalElements }
-};
 
 export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   const [pagination, setPagination] = useState<PaginationState>({
@@ -65,25 +42,65 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
     pageSize: 10,
   });
 
+  interface ApiResponse {
+    content: any[];
+    totalPages: number;
+    totalElements: number;
+  }
+  const [data, setData] = useState<ApiResponse | null>(null);
+
   const [filters, setFilters] = useState<
     Array<{ columnId: string; value: any }>
   >([]);
+  const [isFetching, setIsFetching] = useState(false);
 
-  const { data, isFetching, refetch } = useQuery({
-    queryKey: [
-      "table-data",
-      pagination.pageIndex,
-      pagination.pageSize,
-      filters,
-    ], // Thêm bộ lọc vào queryKey để tái tải lại khi bộ lọc thay đổi
-    queryFn:  () =>
-      debouncedFetchData(pagination.pageIndex, pagination.pageSize, filters),
-    staleTime: 1000, // Dữ liệu sẽ vẫn được coi là mới trong 5 giây
-  });
+  const fetchData = async (
+    pageIndex: number,
+    pageSize: number,
+    filters: Array<{ columnId: string; value: any }>
+  ) => {
+    setIsFetching(true);
+
+    const filterParams = filters.reduce<Record<string, any>>((acc, filter) => {
+      acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
+      return acc;
+    }, {});
+
+    const res = await axios.post(
+      "http://localhost:8080/api/excel_search", // URL
+      filterParams, // Body (filters sẽ được gửi trong body của POST request)
+      {
+        params: {
+          // Query params (page, size)
+          page: pageIndex,
+          size: pageSize,
+        },
+      }
+    );
+
+    setData(res.data);
+
+    setIsFetching(false);
+
+    return res.data; // Giả định là { content: [], totalPages, totalElements }
+  };
+
+  // Debounce fetchData
+  const debouncedFetchData = debounce(fetchData, 1000);
+
+  useEffect(() => {
+    debouncedFetchData(pagination.pageIndex, pagination.pageSize, filters);
+
+    // Cleanup debounce on unmount
+    return () => {
+      debouncedFetchData.cancel();
+    };
+  }, [pagination.pageIndex, pagination.pageSize, filters]);
 
   // Handle filter change and trigger the API call
   const handleFilterChange = (value: string, columnId: string) => {
     table.getColumn(columnId)?.setFilterValue(value);
+    table.setPageIndex(1)
 
     // Update filter state
     setFilters((oldFilters) => {
@@ -112,7 +129,6 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
     manualPagination: true,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-
   });
 
   return (
@@ -219,14 +235,14 @@ function PaginationControls({
       >
         {">>"}
       </Button>
-  
+
       <span className="text-sm">
         Trang{" "}
         <strong>
           {table.getState().pagination.pageIndex + 1} / {data?.totalPages}
         </strong>
       </span>
-  
+
       <div className="flex items-center gap-2">
         <span className="text-sm">| Đến trang:</span>
         <Input
@@ -241,7 +257,7 @@ function PaginationControls({
           }}
         />
       </div>
-  
+
       <Select
         value={String(table.getState().pagination.pageSize)}
         onValueChange={(value) => table.setPageSize(Number(value))}
@@ -257,8 +273,10 @@ function PaginationControls({
           ))}
         </SelectContent>
       </Select>
-  
-      {isFetching && <span className="ml-2 text-sm text-muted-foreground">Đang tải...</span>}
+
+      {isFetching && (
+        <span className="ml-2 text-sm text-muted-foreground">Đang tải...</span>
+      )}
     </div>
   );
 }
