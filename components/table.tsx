@@ -209,7 +209,7 @@ function PaginationControls({
   isFetching: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3 mt-4">
+    <div className="flex flex-wrap items-center gap-1 mt-1">
       <Button
         variant="outline"
         size="icon"
@@ -273,7 +273,7 @@ function PaginationControls({
           <SelectValue placeholder="Số dòng / trang" />
         </SelectTrigger>
         <SelectContent>
-          {[10, 20, 30, 50, 100].map((size) => (
+          {[10, 20, 30, 50, 100,500].map((size) => (
             <SelectItem key={size} value={String(size)}>
               {`Hiển thị ${size}`}
             </SelectItem>
