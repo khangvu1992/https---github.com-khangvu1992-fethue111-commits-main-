@@ -86,7 +86,7 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   };
 
   // Debounce fetchData
-  const debouncedFetchData = debounce(fetchData, 1000);
+  const debouncedFetchData = debounce(fetchData, 1300);
 
   useEffect(() => {
     debouncedFetchData(pagination.pageIndex, pagination.pageSize, filters);
@@ -100,7 +100,7 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
   // Handle filter change and trigger the API call
   const handleFilterChange = (value: string, columnId: string) => {
     table.getColumn(columnId)?.setFilterValue(value);
-    table.setPageIndex(1)
+    table.setPageIndex(0)
 
     // Update filter state
     setFilters((oldFilters) => {
@@ -121,7 +121,14 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
 
   const table = useReactTable({
     data: data?.content ?? [],
-    columns,
+    columns: [
+      {
+        id: "stt",
+        header: "STT",
+        cell: ({ row }) => pagination.pageIndex * pagination.pageSize + row.index + 1,
+      },
+      ...columns // các cột khác do bạn truyền vào
+    ],
     pageCount: data?.totalPages ?? -1,
     state: {
       pagination,
@@ -250,7 +257,7 @@ function PaginationControls({
           min={1}
           max={data?.totalPages}
           className="w-20"
-          defaultValue={table.getState().pagination.pageIndex + 1}
+          value={table.getState().pagination.pageIndex + 1}
           onChange={(e) => {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
             table.setPageIndex(page);
@@ -277,6 +284,10 @@ function PaginationControls({
       {isFetching && (
         <span className="ml-2 text-sm text-muted-foreground">Đang tải...</span>
       )}
+      {!isFetching && (
+        <span className="ml-2 text-sm text-muted-foreground">{data?.totalElements}</span>
+      )}
+     
     </div>
   );
 }
