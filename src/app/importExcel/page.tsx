@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
+import ProgressWebSocket from "@/components/ProgressWebSocket";
 
 
 export default function ImportExcel() {
@@ -49,6 +50,9 @@ export default function ImportExcel() {
         <Button onClick={handleUpload}>Upload</Button>
 
       </div>
+      <ProgressWebSocket />
+      <h1>📁 Tiến trình import file</h1>
+      {/* Thêm UI để hiển thị tiến trình ở đây */}
     </div>
   );
 }
