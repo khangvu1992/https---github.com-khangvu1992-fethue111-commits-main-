@@ -184,7 +184,7 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="border p-2">
+                <TableCell key={cell.id} className="border p-2 ">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
