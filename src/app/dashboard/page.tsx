@@ -314,7 +314,7 @@ export default function dashboard() {
 
   return (
     <>
-      <Header title="bang du lieu"></Header>
+      <Header title="BẢNG DỮ LIỆU"></Header>
       {dataFromChild}
 
       <MyTable

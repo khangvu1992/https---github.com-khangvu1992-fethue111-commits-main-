@@ -16,30 +16,30 @@ import Link from "next/link"
 // Menu items.
 const items = [
   {
-    title: "Dashboard",
+    title: "Tìm Kiếm Thuế",
     url: "/dashboard",
-    icon: Home,
-  },
-  {
-    title: "Import Excel",
-    url: "/importExcel",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
     icon: Search,
   },
   {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Import file Excel",
+    url: "/importExcel",
+    icon: Inbox,
   },
+  // {
+  //   title: "Calendar",
+  //   url: "#",
+  //   icon: Calendar,
+  // },
+  // {
+  //   title: "Search",
+  //   url: "#",
+  //   icon: Search,
+  // },
+  // {
+  //   title: "Settings",
+  //   url: "#",
+  //   icon: Settings,
+  // },
 ]
 
 export function AppSidebar() {

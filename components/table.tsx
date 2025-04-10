@@ -140,6 +140,15 @@ export default function MyTable({ columns }: { columns: ColumnDef<any>[] }) {
 
   return (
     <div className="p-4">
+      {/* Display filters if needed */}
+      {filters.map(filter => (
+  // Kiểm tra xem giá trị của filter có phải là null, undefined hoặc chuỗi rỗng không
+  filter.value && filter.value !== "" && (
+    <div key={filter.columnId}>
+      {filter.columnId}: {filter.value}
+    </div>
+  )
+))}
       <table className="border w-full">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
