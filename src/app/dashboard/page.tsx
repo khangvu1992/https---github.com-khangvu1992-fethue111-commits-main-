@@ -225,10 +225,17 @@ export default function dashboard() {
   //   ],
   //   []
   // );
+
+  const formatNumber = (number: number) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 3, // Đảm bảo có 2 chữ số sau dấu phẩy
+      maximumFractionDigits: 3, // Đảm bảo không có quá 2 chữ số sau dấu phẩy
+    }).format(number);
+  };
   
   const columns = React.useMemo<ColumnDef<any>[]>(
     () => [
-      { accessorKey: "id", header: () => "ID", footer: (props) => props.column.id },
+      // { accessorKey: "id", header: () => "ID", footer: (props) => props.column.id },
       { accessorKey: "tkid", header: () => "TKID", footer: (props) => props.column.id },
       { accessorKey: "sotk", header: () => "SOTK", footer: (props) => props.column.id },
       { accessorKey: "mahq", header: () => "MAHQ", footer: (props) => props.column.id },
@@ -252,20 +259,22 @@ export default function dashboard() {
       { accessorKey: "vandon03", header: () => "Vận Đơn 03", footer: (props) => props.column.id },
       { accessorKey: "vandon04", header: () => "Vận Đơn 04", footer: (props) => props.column.id },
       { accessorKey: "vandon05", header: () => "Vận Đơn 05", footer: (props) => props.column.id },
-      { accessorKey: "soluongkienhang", header: () => "Số Lượng Kiện Hàng", footer: (props) => props.column.id },
+      { accessorKey: "soluongkienhang", header: () => "Số Lượng Kiện Hàng", footer: (props) => props.column.id, cell: ({ getValue }) => formatNumber(getValue() as number), },
       { accessorKey: "maDvtKienhang", header: () => "Mã ĐVT Kiện Hàng", footer: (props) => props.column.id },
-      { accessorKey: "grossweight", header: () => "Trọng Lượng Tổng", footer: (props) => props.column.id },
+      { accessorKey: "grossweight", header: () => "Trọng Lượng Tổng", footer: (props) => props.column.id, cell: ({ getValue }) => formatNumber(getValue() as number), },
       { accessorKey: "maDvtGw", header: () => "Mã ĐVT GW", footer: (props) => props.column.id },
-      { accessorKey: "soluongContainer", header: () => "Số Lượng Container", footer: (props) => props.column.id },
+      { accessorKey: "soluongContainer", header: () => "Số Lượng Container", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
       { accessorKey: "maDiadiemdohang", header: () => "Mã Địa Điểm Đó Hàng", footer: (props) => props.column.id },
       { accessorKey: "maDiadiemxephang", header: () => "Mã Địa Điểm Xếp Hàng", footer: (props) => props.column.id },
       { accessorKey: "tenPhuongtienvanchuyen", header: () => "Tên Phương Tiện Vận Chuyển", footer: (props) => props.column.id },
       { accessorKey: "ngayHangDen", header: () => "Ngày Hàng Đến", footer: (props) => props.column.id },
       { accessorKey: "phuongThucThanhToan", header: () => "Phương Thức Thanh Toán", footer: (props) => props.column.id },
-      { accessorKey: "tongTriGiaHoaDon", header: () => "Tổng Trị Giá Hóa Đơn", footer: (props) => props.column.id },
-      { accessorKey: "tongTriGiaTinhThue", header: () => "Tổng Trị Giá Tính Thuế", footer: (props) => props.column.id },
-      { accessorKey: "tongTienThue", header: () => "Tổng Tiền Thuế", footer: (props) => props.column.id },
-      { accessorKey: "tongSoDonghang", header: () => "Tổng Số Dòng Hàng", footer: (props) => props.column.id },
+      { accessorKey: "tongTriGiaHoaDon", header: () => "Tổng Trị Giá Hóa Đơn", footer: (props) => props.column.id, cell: ({ getValue }) => formatNumber(getValue() as number),
+  
+    },
+      { accessorKey: "tongTriGiaTinhThue", header: () => "Tổng Trị Giá Tính Thuế", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number), },
+      { accessorKey: "tongTienThue", header: () => "Tổng Tiền Thuế", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number), },
+      { accessorKey: "tongSoDonghang", header: () => "Tổng Số Dòng Hàng", footer: (props) => props.column.id, cell: ({ getValue }) => formatNumber(getValue() as number), },
       { accessorKey: "ngayCapPhep", header: () => "Ngày Cấp Phép", footer: (props) => props.column.id },
       { accessorKey: "gioCapPhep", header: () => "Giờ Cấp Phép", footer: (props) => props.column.id },
       { accessorKey: "ngayHoanthanhKiemtra", header: () => "Ngày Hoàn Thành Kiểm Tra", footer: (props) => props.column.id },
@@ -276,17 +285,17 @@ export default function dashboard() {
       { accessorKey: "tenNguoiphutrachKiemhoa", header: () => "Tên Người Phụ Trách Kiểm Hóa", footer: (props) => props.column.id },
       { accessorKey: "hsCode", header: () => "HS Code", footer: (props) => props.column.id },
       { accessorKey: "moTaHangHoa", header: () => "Mô Tả Hàng Hóa", footer: (props) => props.column.id },
-      { accessorKey: "soLuongHanghoa", header: () => "Số Lượng Hàng Hóa", footer: (props) => props.column.id },
-      { accessorKey: "maDvtHanghoa", header: () => "Mã ĐVT Hàng Hóa", footer: (props) => props.column.id },
-      { accessorKey: "triGiaHoaDon", header: () => "Trị Giá Hóa Đơn", footer: (props) => props.column.id },
+      { accessorKey: "soLuongHanghoa", header: () => "Số Lượng Hàng Hóa", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
+      { accessorKey: "maDvtHanghoa", header: () => "Mã ĐVT Hàng Hóa", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
+      { accessorKey: "triGiaHoaDon", header: () => "Trị Giá Hóa Đơn", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
       { accessorKey: "dongiaHoadon", header: () => "Đơn Giá Hóa Đơn", footer: (props) => props.column.id },
       { accessorKey: "maTienteHoadon", header: () => "Mã Tiền Tệ Hóa Đơn", footer: (props) => props.column.id },
       { accessorKey: "donviDongiaTiente", header: () => "Đơn Vị Đơn Giá Tiền Tệ", footer: (props) => props.column.id },
-      { accessorKey: "triGiaTinhThueS", header: () => "Trị Giá Tính Thuế S", footer: (props) => props.column.id },
-      { accessorKey: "triGiaTinhThueM", header: () => "Trị Giá Tính Thuế M", footer: (props) => props.column.id },
-      { accessorKey: "dongiaTinhthue", header: () => "Đơn Giá Tính Thuế", footer: (props) => props.column.id },
+      { accessorKey: "triGiaTinhThueS", header: () => "Trị Giá Tính Thuế S", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
+      { accessorKey: "triGiaTinhThueM", header: () => "Trị Giá Tính Thuế M", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
+      { accessorKey: "dongiaTinhthue", header: () => "Đơn Giá Tính Thuế", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
       { accessorKey: "thuesuatNhapkhau", header: () => "Thuế Suất Nhập Khẩu", footer: (props) => props.column.id },
-      { accessorKey: "tienThueNhapkhau", header: () => "Tiền Thuế Nhập Khẩu", footer: (props) => props.column.id },
+      { accessorKey: "tienThueNhapkhau", header: () => "Tiền Thuế Nhập Khẩu", footer: (props) => props.column.id , cell: ({ getValue }) => formatNumber(getValue() as number),},
       { accessorKey: "xuatxu", header: () => "Xuất Xứ", footer: (props) => props.column.id },
       { accessorKey: "maVanbanphapquy", header: () => "Mã Văn Bản Pháp Quy", footer: (props) => props.column.id },
       { accessorKey: "phanloaiGiayphepNk", header: () => "Phân Loại Giấy Phép NK", footer: (props) => props.column.id },
@@ -306,7 +315,7 @@ export default function dashboard() {
   return (
     <>
       <Header title="bang du lieu"></Header>
-      {dataFromChild}9999999999999999999999999999999999999
+      {dataFromChild}
 
       <MyTable
         {...{
