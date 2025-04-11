@@ -104,7 +104,7 @@ export default function ImportExcel() {
           onChange={handleFileChange}
           ref={fileInputRef}
         />
-        <span className="text-red-950">{duplicate}</span>
+        <span className="text-red-500">{duplicate}</span>
 
         <Button onClick={handleUpload}>Upload</Button>
       </div>
