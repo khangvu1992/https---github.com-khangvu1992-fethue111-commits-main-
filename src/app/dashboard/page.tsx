@@ -236,7 +236,7 @@ export default function dashboard() {
   const columns = React.useMemo<ColumnDef<any>[]>(
     () => [
       // { accessorKey: "id", header: () => "ID", footer: (props) => props.column.id },
-      { accessorKey: "tkid", header: () => "TKID", footer: (props) => props.column.id },
+      // { accessorKey: "tkid", header: () => "TKID", footer: (props) => props.column.id },
       { accessorKey: "sotk", header: () => "SOTK", footer: (props) => props.column.id },
       { accessorKey: "mahq", header: () => "MAHQ", footer: (props) => props.column.id },
       { accessorKey: "trangthaitk", header: () => "Trạng thái TK", footer: (props) => props.column.id },
