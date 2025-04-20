@@ -16,7 +16,7 @@ import Link from "next/link"
 // Menu items.
 const items = [
   {
-    title: "Tìm Kiếm Thuế",
+    title: "Tìm Kiếm Nhập Khẩu",
     url: "/dashboard",
     icon: Search,
   },
