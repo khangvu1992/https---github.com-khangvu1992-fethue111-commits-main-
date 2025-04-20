@@ -21,8 +21,13 @@ const items = [
     icon: Search,
   },
   {
-    title: "Import file Excel",
+    title: "Import Nhập Khẩu",
     url: "/importExcel",
+    icon: Inbox,
+  },
+  {
+    title: "Import Xuất Khẩu",
+    url: "/exportExcel",
     icon: Inbox,
   },
   // {

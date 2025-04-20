@@ -66,7 +66,7 @@ export default function ImportExcel() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/excel1_jdbc/import",
+        "http://localhost:8080/api/export/import-export",
         formData,
         {
           headers: {
@@ -93,11 +93,11 @@ export default function ImportExcel() {
 
   return (
     <div>
-      <Header title="Import File Excel Nhập Khẩu"></Header>
+      <Header title="Import File Excel Xuất Khẩu"></Header>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <br />
-        <Label htmlFor="picture">FILE excel</Label>
+        <Label htmlFor="picture">FILE excel </Label>
         <Input
           type="file"
           accept=".xlsx, .xls"
@@ -106,7 +106,7 @@ export default function ImportExcel() {
         />
         <span className="text-red-500">{duplicate}</span>
 
-        <Button onClick={handleUpload}>Upload Nhập Khẩu</Button>
+        <Button onClick={handleUpload}>Upload Xuất Khẩu</Button>
       </div>
       <br />
       <br />
