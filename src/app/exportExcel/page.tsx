@@ -106,7 +106,7 @@ export default function ImportExcel() {
         />
         <span className="text-red-500">{duplicate}</span>
 
-        <Button onClick={handleUpload}>Upload Xuất Khẩu</Button>
+        <Button onClick={handleUpload}>Upload Xuất </Button>
       </div>
       <br />
       <br />

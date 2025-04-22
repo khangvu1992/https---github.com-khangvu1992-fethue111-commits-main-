@@ -16,18 +16,24 @@ import Link from "next/link"
 // Menu items.
 const items = [
   {
-    title: "Tìm Kiếm Nhập Khẩu",
+    title: "Tìm Kiếm Nhập ",
     url: "/dashboard",
     icon: Search,
   },
   {
-    title: "Import Nhập Khẩu",
+    title: "Import Nhập ",
     url: "/importExcel",
     icon: Inbox,
   },
   {
-    title: "Import Xuất Khẩu",
+    title: "Import Xuất ",
     url: "/exportExcel",
+    icon: Inbox,
+  },
+
+  {
+    title: "Import khai hàng hóa ",
+    url: "/dynamicExcel",
     icon: Inbox,
   },
   // {
