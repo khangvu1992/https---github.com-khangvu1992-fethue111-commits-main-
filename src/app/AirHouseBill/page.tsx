@@ -66,7 +66,7 @@ export default function ImportExcel() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/SeawayHouseBill/import-SeawayHouseBill",
+        "http://localhost:8080/api/AirHouseBill/import-AirHouseBill",
         formData,
         {
           headers: {
@@ -93,11 +93,11 @@ export default function ImportExcel() {
 
   return (
     <div>
-      <Header title="Import File SeawayHouseBill"></Header>
+      <Header title="Import File AirHouseBill"></Header>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <br />
-        <Label htmlFor="picture">FILE excel SeawayHouseBill</Label>
+        <Label htmlFor="picture">FILE excel AirHouseBill</Label>
         <Input
           type="file"
           accept=".csv"
@@ -106,7 +106,7 @@ export default function ImportExcel() {
         />
         <span className="text-red-500">{duplicate}</span>
 
-        <Button onClick={handleUpload}>Upload SeawayHouseBill </Button>
+        <Button onClick={handleUpload}>Upload AirHouseBill </Button>
       </div>
       <br />
       <br />
