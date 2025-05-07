@@ -36,6 +36,12 @@ const items = [
     url: "/SeawayMasterBill",
     icon: Inbox,
   },
+  
+  {
+    title: "SeawayHouseBill",
+    url: "/SeawayHouseBill",
+    icon: Inbox,
+  },
   // {
   //   title: "Calendar",
   //   url: "#",
