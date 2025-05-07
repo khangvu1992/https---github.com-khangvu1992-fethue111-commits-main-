@@ -31,11 +31,11 @@ const items = [
     icon: Inbox,
   },
 
-  // {
-  //   title: "Import khai hàng hóa ",
-  //   url: "/dynamicExcel",
-  //   icon: Inbox,
-  // },
+  {
+    title: "SeawayMasterBill",
+    url: "/SeawayMasterBill",
+    icon: Inbox,
+  },
   // {
   //   title: "Calendar",
   //   url: "#",
