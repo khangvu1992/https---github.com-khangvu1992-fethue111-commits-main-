@@ -57,7 +57,10 @@ const ProgressWebSocket = () => {
       <h3>File Import Progress</h3>
       <div>
         {isDone ? (
-          "Đã hoàn thành"
+          
+
+          <span className="text-green-500">  Đã hoàn thành</span>
+        
         ) : (
           <div
             style={{
