@@ -66,7 +66,7 @@ export default function ImportExcel() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/SeawayHouseBill/import-SeawayHouseBill",
+        "http://localhost:8080/api/SeawayMasterBill/import-SeawayMasterBill",
         formData,
         {
           headers: {
