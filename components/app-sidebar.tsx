@@ -52,6 +52,11 @@ const items = [
     url: "/AirHouseBill",
     icon: Inbox,
   },
+    {
+    title: "Vận Đơn",
+    url: "/VanDon",
+    icon: Inbox,
+  },
   {
     title: "Nhập Khẩu Check Bill",
     url: "/SearchCheckBill",

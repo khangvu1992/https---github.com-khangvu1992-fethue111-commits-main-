@@ -66,7 +66,7 @@ export default function ImportExcel() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/SeawayMasterBill/import-SeawayMasterBill",
+        "http://localhost:8080/api/van_don_jdbc/import",
         formData,
         {
           headers: {
@@ -93,20 +93,20 @@ export default function ImportExcel() {
 
   return (
     <div>
-      <Header title="Import File SeawayHouseBill"></Header>
+      <Header title="Import File Vận Đơn"></Header>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <br />
-        <Label htmlFor="picture">FILE excel SeawayHouseBill</Label>
+        <Label htmlFor="picture">FILE excel Vận Đơn</Label>
         <Input
           type="file"
-          accept=".csv"
+         accept=".xlsx, .xls"
           onChange={handleFileChange}
           ref={fileInputRef}
         />
         <span className="text-red-500">{duplicate}</span>
 
-        <Button onClick={handleUpload}>Upload SeawayHouseBill </Button>
+        <Button onClick={handleUpload}>Upload Vận Đơn </Button>
       </div>
       <br />
       <br />
