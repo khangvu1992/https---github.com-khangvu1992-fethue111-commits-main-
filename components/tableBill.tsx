@@ -124,8 +124,8 @@ export default function MyTableBill({
 
   return (
     <div className="p-4">
-      <div className="w-full overflow-x-auto scrollbar-thick">
-        <table className="border w-full min-w-[800px]">
+      <div className="max-h-[600px]  max-w-9/10  overflow-x-auto overflow-y-auto  scrollbar-thick">
+        <table className="border w-full min-w-[800px] ">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
