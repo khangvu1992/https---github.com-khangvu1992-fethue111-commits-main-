@@ -60,7 +60,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
     });
   }
 
-  function handleExportToExcel(event: MouseEvent<HTMLButtonElement, MouseEvent>): void {
+  function handleExportToExcel(event: React.MouseEvent<HTMLButtonElement>): void {
     throw new Error("Function not implemented.");
   }
 

@@ -154,12 +154,12 @@ export default function dashboard() {
       />
 
       <hr />
-      <div>
+      {/* <div>
         <button onClick={() => rerender()}>Force Rerender</button>
       </div>
       <div>
         <button onClick={() => refreshData()}>Refresh Data</button>
-      </div>
+      </div> */}
     </>
   );
 }
