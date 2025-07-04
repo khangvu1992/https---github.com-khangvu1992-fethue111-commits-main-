@@ -98,26 +98,7 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
   }, [pagination.pageIndex, pagination.pageSize, filters]);
 
   // Handle filter change and trigger the API call
-  const handleFilterChange = (value: string, columnId: string) => {
-    table.getColumn(columnId)?.setFilterValue(value);
-    table.setPageIndex(0)
 
-    // Update filter state
-    setFilters((oldFilters) => {
-      const newFilters = [...oldFilters];
-      const index = newFilters.findIndex(
-        (filter) => filter.columnId === columnId
-      );
-
-      if (index >= 0) {
-        newFilters[index].value = value; // Update filter value
-      } else {
-        newFilters.push({ columnId, value }); // Add new filter
-      }
-
-      return newFilters;
-    });
-  };
 
   const table = useReactTable({
     data: data?.content ?? [],
@@ -140,15 +121,8 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
 
   return (
     <div className="p-4">
-      {/* Display filters if needed */}
-      {filters.map(filter => (
-  // Kiểm tra xem giá trị của filter có phải là null, undefined hoặc chuỗi rỗng không
-  filter.value && filter.value !== "" && (
-    <div key={filter.columnId}>
-      {filter.columnId}: {filter.value}
-    </div>
-  )
-))}
+
+
 <div className="w-full overflow-x-auto">
 <table className="border w-full min-w-[800px]">
         <TableHeader>
@@ -162,27 +136,13 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
                         ? "cursor-pointer select-none"
                         : ""
                     }
-                    // onClick={header.column.getToggleSortingHandler()}
                   >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
                     )}
 
-                    {header.column.getCanFilter() && (
-                      <div>
-                        <input
-                          type="text"
-                          value={
-                            (header.column.getFilterValue() as string) ?? ""
-                          }
-                          onChange={(e) => {
-                            handleFilterChange(e.target.value, header.id); // Call the handler
-                          }}
-                          placeholder="Search..."
-                        />
-                      </div>
-                    )}
+
                   </div>
                 </TableHead>
               ))}
