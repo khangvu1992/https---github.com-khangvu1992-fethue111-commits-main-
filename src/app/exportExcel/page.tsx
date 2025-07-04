@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import ProgressWebSocket from "@/components/ProgressWebSocket";
 import { log } from "console";
 
-export default function ImportExcel() {
+export default function ImportExcelExport() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoad, setIsLoad] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
