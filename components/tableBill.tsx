@@ -11,8 +11,7 @@ import {
   Column,
 } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import {  useEffect, useState } from "react";
 import axios from "axios";
 import {
   TableBody,
@@ -37,6 +36,10 @@ import { debounce } from "lodash";
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 
 export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) {
+
+    const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -129,7 +132,7 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} colSpan={header.colSpan}>
+                <TableHead key={header.id} colSpan={header.colSpan} className="border p-2 font-bold">
                   <div
                     className={
                       header.column.getCanSort()
@@ -152,7 +155,12 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
 
         <TableBody >
           {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
+            <TableRow key={row.id}    onClick={() =>
+            setSelectedRowId((prev) => (prev === row.id ? null : row.id))
+          }  className="even:bg-gray-100 cursor-pointer"
+          data-state={selectedRowId === row.id ? "selected" : undefined}
+          >
+
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id} className="border p-2 ">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
