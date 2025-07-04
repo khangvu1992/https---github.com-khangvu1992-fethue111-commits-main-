@@ -15,52 +15,52 @@ import Link from "next/link"
 
 // Menu items.
 const items = [
-  {
-    title: "Tìm Kiếm Nhập ",
-    url: "/dashboard",
-    icon: Search,
-  },
-  {
-    title: "Import Nhập ",
-    url: "/importExcel",
-    icon: Inbox,
-  },
-  {
-    title: "Import Xuất ",
-    url: "/exportExcel",
-    icon: Inbox,
-  },
+  // {
+  //   title: "Tìm Kiếm Nhập ",
+  //   url: "/dashboard",
+  //   icon: Search,
+  // },
+  // {
+  //   title: "Import Nhập ",
+  //   url: "/importExcel",
+  //   icon: Inbox,
+  // },
+  // {
+  //   title: "Import Xuất ",
+  //   url: "/exportExcel",
+  //   icon: Inbox,
+  // },
 
-  {
-    title: "SeawayMasterBill",
-    url: "/SeawayMasterBill",
-    icon: Inbox,
-  },
+  // {
+  //   title: "SeawayMasterBill",
+  //   url: "/SeawayMasterBill",
+  //   icon: Inbox,
+  // },
   
+  // {
+  //   title: "SeawayHouseBill",
+  //   url: "/SeawayHouseBill",
+  //   icon: Inbox,
+  // },
+  // {
+  //   title: "AirMasterBill",
+  //   url: "/AirMasterBill",
+  //   icon: Inbox,
+  // },
+  // {
+  //   title: "AirHouseBill",
+  //   url: "/AirHouseBill",
+  //   icon: Inbox,
+  // },
+  //   {
+  //   title: "Vận Đơn",
+  //   url: "/VanDon",
+  //   icon: Inbox,
+  // },
   {
-    title: "SeawayHouseBill",
-    url: "/SeawayHouseBill",
-    icon: Inbox,
-  },
-  {
-    title: "AirMasterBill",
-    url: "/AirMasterBill",
-    icon: Inbox,
-  },
-  {
-    title: "AirHouseBill",
-    url: "/AirHouseBill",
-    icon: Inbox,
-  },
-    {
-    title: "Vận Đơn",
-    url: "/VanDon",
-    icon: Inbox,
-  },
-  {
-    title: "Nhập Khẩu Check Bill",
+    title: "Tìm Kiếm",
     url: "/SearchCheckBill",
-    icon: Inbox,
+    icon: Search,
   },
 
     {

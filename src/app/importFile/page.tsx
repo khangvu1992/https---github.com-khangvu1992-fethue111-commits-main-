@@ -32,6 +32,11 @@ import {
 } from "@/components/ui/select";
 import ImportExcel from "../importExcel/page";
 import ImportExcelExport from "../exportExcel/page";
+import ImportExcelSeawayMasterBill from "../SeawayMasterBill/page";
+import ImportExcelSeawayHouseBill from "../SeawayHouseBill/page";
+import ImportExcelAirMasterBill from "../AirMasterBill/page";
+import ImportExcelAirHouseBill from "../AirHouseBill/page";
+import ImportExcelVanDon from "../VanDon/page";
 
 const FormSchema = z.object({
   slectModel: z.string(),
@@ -60,6 +65,7 @@ export default function ImportFile() {
   return (
     <div>
       <Header title="Import File "></Header>
+   <br />
       <Form {...form}>
         <div className="flex flex-wrap gap-6 ml-5">
           <FormField
@@ -91,10 +97,15 @@ export default function ImportFile() {
           />
         </div>
       </Form>
+      <br />
 
      {selectedModelType === "nhapKhau" && <ImportExcel />}
      {selectedModelType === "xuatKhau" && <ImportExcelExport />}
-
+     {selectedModelType === "SeawayMasterBill" && <ImportExcelSeawayMasterBill />}
+     {selectedModelType === "SeawayHouseBill" && <ImportExcelSeawayHouseBill />}
+     {selectedModelType === "AirMasterBill" && <ImportExcelAirMasterBill />}
+     {selectedModelType === "AirHouseBill" && <ImportExcelAirHouseBill />}
+     {selectedModelType === "VanDon" && <ImportExcelVanDon />}
 
       {/* Thêm UI để hiển thị tiến trình ở đây */}
     </div>

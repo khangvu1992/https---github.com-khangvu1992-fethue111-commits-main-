@@ -93,11 +93,11 @@ export default function ImportExcel() {
 
   return (
     <div>
-      <Header title="Import File Excel Nhập Khẩu"></Header>
+      <Header title="Excel Nhập Khẩu"></Header>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <br />
-        <Label htmlFor="picture">FILE excel</Label>
+        {/* <Label htmlFor="picture">FILE excel</Label> */}
         <Input
           type="file"
           accept=".xlsx, .xls"

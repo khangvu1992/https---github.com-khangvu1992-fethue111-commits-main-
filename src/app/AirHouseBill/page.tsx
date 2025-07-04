@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import ProgressWebSocket from "@/components/ProgressWebSocket";
 import { log } from "console";
 
-export default function ImportExcel() {
+export default function ImportExcelAirHouseBill() {
   const [file, setFile] = useState<File | null>(null);
   const [isLoad, setIsLoad] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,11 +93,11 @@ export default function ImportExcel() {
 
   return (
     <div>
-      <Header title="Import File AirHouseBill"></Header>
+      <Header title="AirHouseBill"></Header>
 
       <div className="grid w-full max-w-sm items-center gap-1.5">
         <br />
-        <Label htmlFor="picture">FILE excel AirHouseBill</Label>
+        {/* <Label htmlFor="picture">FILE excel AirHouseBill</Label> */}
         <Input
           type="file"
           accept=".csv"

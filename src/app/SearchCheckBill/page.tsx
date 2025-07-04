@@ -124,7 +124,6 @@ export default function dashboard() {
 
   const [data, setData] = React.useState(() => makeData(100));
   const refreshData = () => setData(() => makeData(100));
-  console.log("dataFromChild", dataFromChild);
 
   const handleData = (data:any) => {
     console.log(data); // "Data from child"
@@ -133,8 +132,8 @@ export default function dashboard() {
 
   return (
     <>
-      <Header title="Nhập khẩu-SeaHouseBill-SeaMasterBill "></Header>
-      {dataFromChild}
+      <Header title="Tìm kiếm"></Header>
+   
     <br />
       <div>
       <InputForm onSend={handleData}></InputForm>
