@@ -124,7 +124,7 @@ export default function MyTableBill({
 
   return (
     <div className="p-4">
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto scrollbar-thick">
         <table className="border w-full min-w-[800px]">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -164,7 +164,7 @@ export default function MyTableBill({
                 }
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="border p-2 ">
+                  <TableCell key={cell.id} className="border p-2 text-sm">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
