@@ -17,22 +17,53 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const FormSchema = z.object({
   username: z.string(),
-  dateDK: z.string().nonempty("NgayDK is required"),
+  dateDK: z.string(),
   mahq: z.string(),
   hsCode: z.string(),
   numKQ: z.string().nonempty("This is required"),
+  nameTable: z.string(),
+  typeTable: z.string(),
 });
 
 export function InputForm({ onSend }: { onSend: (data: any) => void }) {
 
-  const dateOptions = [
-  { label: "Hôm nay", value: "today" },
-  { label: "7 ngày qua", value: "last7days" },
-  { label: "Tháng này", value: "thisMonth" },
-  { label: "Tuỳ chọn ngày", value: "custom" },
+
+  useEffect(() => {
+
+
+    fetchData();
+  }, []);
+
+      const fetchData = async () => {
+      try {
+        // Replace with your API endpoint
+        const response = await axios.get("http://localhost:8080/api/bill_search");
+        setOptionTable(response.data);
+
+        // If the request is successful, set the files in the state
+      } catch (err) {
+        console.error("Error fetching files:", err);
+      }
+    };
+
+
+    type OptionTableItem = { tableName: string };
+    const [optionTable, setOptionTable] = useState<OptionTableItem[]>([]);
+
+  const typeOptionsTable = [
+  { label: "Nhập khẩu", value: "nhapKhau" },
+  { label: "Xuất khẩu", value: "xuatKhau" },
+  { label: "SeawayMasterBill", value: "SeawayMasterBill" },
+  { label: "SeawayHouseBill", value: "SeawayHouseBill" },
+    { label: "AirMasterBill", value: "AirMasterBill" },
+    { label: "AirHouseBill", value: "AirHouseBill" },
+    { label: "Vận Đơn", value: "VanDon" },
+   
 ];
 
 
@@ -45,6 +76,8 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
       mahq: "",
       hsCode: "",
       numKQ: "100",
+      nameTable: "",
+      typeTable: "",
     },
   });
 
@@ -65,12 +98,16 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
   }
 
   return (
+
+    <>
+   
     <Form {...form}>
+    
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
         <div className="flex flex-wrap gap-6 ml-5">
       <FormField
   control={form.control}
-  name="dateDK"
+  name="nameTable"
   render={({ field }) => (
     <FormItem className="w-1/4">
       <FormLabel>Table database</FormLabel>
@@ -80,12 +117,12 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
           defaultValue={field.value}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Chọn khoảng ngày" />
+            <SelectValue placeholder="Chọn table" />
           </SelectTrigger>
           <SelectContent>
-            {dateOptions.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value}>
-                {opt.label}
+            {optionTable.map((opt) => (
+              <SelectItem  value={opt.tableName}>
+                {opt.tableName}
               </SelectItem>
             ))}
           </SelectContent>
@@ -98,7 +135,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
 
       <FormField
   control={form.control}
-  name="dateDK"
+  name="typeTable"
   render={({ field }) => (
     <FormItem className="w-1/4">
       <FormLabel>Loại bảng</FormLabel>
@@ -111,7 +148,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
             <SelectValue placeholder="Chọn khoảng ngày" />
           </SelectTrigger>
           <SelectContent>
-            {dateOptions.map((opt) => (
+            {typeOptionsTable.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
               </SelectItem>
@@ -204,5 +241,6 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
 
       </form>
     </Form>
+    </>
   );
 }

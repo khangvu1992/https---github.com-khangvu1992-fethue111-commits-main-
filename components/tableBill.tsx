@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "./ui/select";
 import { debounce } from "lodash";
+import clsx from "clsx";
 
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 
@@ -164,8 +165,12 @@ export default function MyTableBill({
                   setSelectedRowId((prev) => (prev === row.id ? null : row.id))
                 }
               >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="border p-2 text-sm">
+                {row.getVisibleCells().map((cell, colIndex) => (
+                  <TableCell key={cell.id}  className={clsx(
+              "border p-2 whitespace-nowrap text-sm",
+              // colIndex === 0 && 'sticky left-0 bg-yellow-100 z-10 shadow',
+            // giả sử cột đầu tiên là 150px
+            )}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
