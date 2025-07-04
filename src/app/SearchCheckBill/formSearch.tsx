@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect, useState } from "react";
+import { Key, useEffect, useState } from "react";
 import axios from "axios";
 
 const FormSchema = z.object({
@@ -44,6 +44,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
         // Replace with your API endpoint
         const response = await axios.get("http://localhost:8080/api/bill_search");
         setOptionTable(response.data);
+  
 
         // If the request is successful, set the files in the state
       } catch (err) {
@@ -52,8 +53,30 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
     };
 
 
-    type OptionTableItem = { tableName: string };
+          const fetchData2 = async (name: string) => {
+      try {
+        // Replace with your API endpoint
+        const response = await axios.get("http://localhost:8080/api/bill_search/nameColumns" ,{
+  params: {
+    tableName: name
+  }
+});
+        setNameColumns(response.data);
+
+        // If the request is successful, set the files in the state
+      } catch (err) {
+        console.error("Error fetching files:", err);
+      }
+    };
+
+
+
+    type OptionTableItem = {
+      columnName: Key | null | undefined; tableName: string 
+};
     const [optionTable, setOptionTable] = useState<OptionTableItem[]>([]);
+    const [nameColumns, setNameColumns] = useState<OptionTableItem[]>([]);
+
 
   const typeOptionsTable = [
   { label: "Nhập khẩu", value: "nhapKhau" },
@@ -109,11 +132,15 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
   control={form.control}
   name="nameTable"
   render={({ field }) => (
-    <FormItem className="w-1/4">
+    <FormItem >
       <FormLabel>Table database</FormLabel>
       <FormControl>
         <Select
-          onValueChange={field.onChange}
+        onValueChange={(value) => {
+        field.onChange(value); // Cập nhật form state nếu dùng react-hook-form
+        fetchData2(value);   // Gọi API để lấy danh sách column
+      }}
+      
           defaultValue={field.value}
         >
           <SelectTrigger>
@@ -137,7 +164,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
   control={form.control}
   name="typeTable"
   render={({ field }) => (
-    <FormItem className="w-1/4">
+    <FormItem >
       <FormLabel>Loại bảng</FormLabel>
       <FormControl>
         <Select
@@ -151,6 +178,37 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
             {typeOptionsTable.map((opt) => (
               <SelectItem key={opt.value} value={opt.value}>
                 {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
+      <FormField
+  control={form.control}
+  name="typeTable"
+  render={({ field }) => (
+    <FormItem >
+      <FormLabel>Các trường</FormLabel>
+      <FormControl>
+        <Select
+          onValueChange={field.onChange}
+          defaultValue={field.value}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Chọn trường nhanh" />
+          </SelectTrigger>
+          <SelectContent>
+            {nameColumns.map((opt) => (
+              <SelectItem
+                key={String(opt.columnName)}
+                value={opt.columnName ? String(opt.columnName) : ""}
+              >
+                {opt.columnName ? String(opt.columnName) : ""}
               </SelectItem>
             ))}
           </SelectContent>
