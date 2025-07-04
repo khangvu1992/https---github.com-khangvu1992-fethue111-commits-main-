@@ -11,7 +11,7 @@ import {
   Column,
 } from "@tanstack/react-table";
 import { flexRender } from "@tanstack/react-table";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import {
   TableBody,
@@ -31,14 +31,14 @@ import {
 } from "./ui/select";
 import { debounce } from "lodash";
 
-
-
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 
-export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) {
-
-    const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-
+export default function MyTableBill({
+  columns,
+}: {
+  columns: ColumnDef<any>[];
+}) {
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -102,16 +102,16 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
 
   // Handle filter change and trigger the API call
 
-
   const table = useReactTable({
     data: data?.content ?? [],
     columns: [
       {
         id: "stt",
         header: "STT",
-        cell: ({ row }) => pagination.pageIndex * pagination.pageSize + row.index + 1,
+        cell: ({ row }) =>
+          pagination.pageIndex * pagination.pageSize + row.index + 1,
       },
-      ...columns // các cột khác do bạn truyền vào
+      ...columns, // các cột khác do bạn truyền vào
     ],
     pageCount: data?.totalPages ?? -1,
     state: {
@@ -124,55 +124,55 @@ export default function MyTableBill({ columns }: { columns: ColumnDef<any>[] }) 
 
   return (
     <div className="p-4">
-
-
-<div className="w-full overflow-x-auto">
-<table className="border w-full min-w-[800px]">
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} colSpan={header.colSpan} className="border p-2 font-bold">
-                  <div
-                    className={
-                      header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : ""
-                    }
+      <div className="w-full overflow-x-auto">
+        <table className="border w-full min-w-[800px]">
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    className="border p-2 font-bold"
                   >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                    <div
+                      className={
+                        header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : ""
+                      }
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </div>
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
 
-
-                  </div>
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-
-        <TableBody >
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}    onClick={() =>
-            setSelectedRowId((prev) => (prev === row.id ? null : row.id))
-          }  className="even:bg-gray-100 cursor-pointer"
-          data-state={selectedRowId === row.id ? "selected" : undefined}
-          >
-
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="border p-2 ">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </table>
-
-</div>
-
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className="even:bg-gray-100 cursor-pointer"
+                data-state={selectedRowId === row.id ? "selected" : undefined}
+                onClick={() =>
+                  setSelectedRowId((prev) => (prev === row.id ? null : row.id))
+                }
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="border p-2 ">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </table>
+      </div>
 
       <PaginationControls table={table} data={data} isFetching={isFetching} />
     </div>
@@ -254,7 +254,7 @@ function PaginationControls({
           <SelectValue placeholder="Số dòng / trang" />
         </SelectTrigger>
         <SelectContent>
-          {[10, 20, 30, 50, 100,500].map((size) => (
+          {[10, 20, 30, 50, 100, 500].map((size) => (
             <SelectItem key={size} value={String(size)}>
               {`Hiển thị ${size}`}
             </SelectItem>
@@ -266,9 +266,10 @@ function PaginationControls({
         <span className="ml-2 text-sm text-muted-foreground">Đang tải...</span>
       )}
       {!isFetching && (
-        <span className="ml-2 text-sm text-muted-foreground">{data?.totalElements}</span>
+        <span className="ml-2 text-sm text-muted-foreground">
+          {data?.totalElements}
+        </span>
       )}
-     
     </div>
   );
 }
