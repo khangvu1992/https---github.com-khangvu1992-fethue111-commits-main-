@@ -98,14 +98,18 @@ export default function ImportFile() {
         </div>
       </Form>
       <br />
-
-     {selectedModelType === "nhapKhau" && <ImportExcel />}
+      <div className="gap-6 ml-5">
+             {selectedModelType === "nhapKhau" && <ImportExcel />}
      {selectedModelType === "xuatKhau" && <ImportExcelExport />}
      {selectedModelType === "SeawayMasterBill" && <ImportExcelSeawayMasterBill />}
      {selectedModelType === "SeawayHouseBill" && <ImportExcelSeawayHouseBill />}
      {selectedModelType === "AirMasterBill" && <ImportExcelAirMasterBill />}
      {selectedModelType === "AirHouseBill" && <ImportExcelAirHouseBill />}
      {selectedModelType === "VanDon" && <ImportExcelVanDon />}
+
+      </div>
+
+
 
       {/* Thêm UI để hiển thị tiến trình ở đây */}
     </div>
