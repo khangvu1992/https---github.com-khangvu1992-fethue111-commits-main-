@@ -134,7 +134,7 @@ export default function MyTableBill({
                     key={header.id}
                     colSpan={header.colSpan}
               
-                    className="border p-2 font-bold sticky top-0 z-10 bg-white" 
+                    className="border p-2 font-bold sticky top-0 z-10 " 
                   >
                     <div
                       className={
