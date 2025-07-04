@@ -55,12 +55,15 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
 
-      
+      <div className="flex flex-wrap gap-6 ml-5">
+ 
+
 <FormField
+
           control={form.control}
           name="dateDK"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-1/4">
               <FormLabel>NgayDK</FormLabel>
               <FormControl>
                 <Input placeholder="yyyy/mm/dd-yyyy/mm/dd" {...field} />
@@ -129,6 +132,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
             </FormItem>
           )}
         />
+        </div>
         <Button type="submit" >Submit</Button>
       </form>
     </Form>
