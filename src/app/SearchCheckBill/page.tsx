@@ -197,14 +197,15 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    console.log("Submitted data:", data);
     try {
       const fieldNames = selectedFields.map((field) => field.split("**")[0]);
-      const filtered = fieldNames.reduce<Record<string, any>>((obj, key) => {
-        if (key in data) {
-          obj[key] = data[key];
-        }
-        return obj;
-      }, {});
+      console.log("Selected fields:", fieldNames);
+      console.log("Selected fields view:", data);
+
+      const filtered = mapFiltered(fieldNames, data);
+console.log(filtered);
+
 
       let payload2 = {
         nameTable: data.nameTable,
@@ -425,37 +426,81 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
               const dataType = rawType?.toLowerCase() || "";
               let inputType = "text";
 
-              if (dataType.includes("date") || dataType.includes("time")) {
-                inputType = "date";
-              } else if (
-                dataType.includes("int") ||
-                dataType.includes("decimal") ||
-                dataType.includes("float") ||
-                dataType.includes("double")
-              ) {
-                inputType = "number";
-              }
+              const isDateType =
+                dataType.includes("date") || dataType.includes("time");
 
-              return (
-                <FormField
-                  key={fieldName}
-                  control={form.control}
-                  name={fieldName}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{fieldName}</FormLabel>
-                      <FormControl>
-                        <Input
-                          type={inputType}
-                          {...field}
-                          placeholder={`Nhập ${fieldName}`}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              );
+              if (isDateType) {
+                inputType = "date";
+                return (
+                  <React.Fragment key={fieldName}>
+                    <FormField
+                      control={form.control}
+                      name={`${fieldName}_from`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{fieldName} từ</FormLabel>
+                          <FormControl>
+                            <Input
+                              type={inputType}
+                              {...field}
+                              placeholder={`Từ ngày ${fieldName}`}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`${fieldName}_to`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{fieldName} đến</FormLabel>
+                          <FormControl>
+                            <Input
+                              type={inputType}
+                              {...field}
+                              placeholder={`Đến ngày ${fieldName}`}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </React.Fragment>
+                );
+              } else {
+                // Non-date fields
+                if (
+                  dataType.includes("int") ||
+                  dataType.includes("decimal") ||
+                  dataType.includes("float") ||
+                  dataType.includes("double")
+                ) {
+                  inputType = "number";
+                }
+
+                return (
+                  <FormField
+                    key={fieldName}
+                    control={form.control}
+                    name={fieldName}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{fieldName}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type={inputType}
+                            {...field}
+                            placeholder={`Nhập ${fieldName}`}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                );
+              }
             })}
           </div>
 
@@ -638,4 +683,24 @@ function PaginationControls({ table, data }: { table: Table<any>; data: any }) {
       </Select>
     </div>
   );
+}
+
+function mapFiltered(selectedFields: string[], data: Record<string, any>) {
+  return selectedFields.reduce((acc, field) => {
+    const fromKey = `${field}_from`;
+    const toKey = `${field}_to`;
+
+    const hasFrom = fromKey in data;
+    const hasTo = toKey in data;
+
+    if (hasFrom || hasTo) {
+      acc[field] = {};
+      if (hasFrom) acc[field].from = data[fromKey];
+      if (hasTo) acc[field].to = data[toKey];
+    } else if (field in data) {
+      acc[field] = data[field];
+    }
+
+    return acc;
+  }, {} as Record<string, any>);
 }
