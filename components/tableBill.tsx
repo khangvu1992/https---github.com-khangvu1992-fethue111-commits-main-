@@ -35,9 +35,10 @@ import clsx from "clsx";
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 
 export default function MyTableBill({
-  columns,
+ data,
+ columns,
 }: {
-  columns: ColumnDef<any>[];
+  data: any,columns: any;
 }) {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
@@ -46,62 +47,12 @@ export default function MyTableBill({
     pageSize: 10,
   });
 
-  interface ApiResponse {
-    content: any[];
-    totalPages: number;
-    totalElements: number;
-  }
-  const [data, setData] = useState<ApiResponse | null>(null);
 
-  const [filters, setFilters] = useState<
-    Array<{ columnId: string; value: any }>
-  >([]);
-  const [isFetching, setIsFetching] = useState(false);
 
-  const fetchData = async (
-    pageIndex: number,
-    pageSize: number,
-    filters: Array<{ columnId: string; value: any }>
-  ) => {
-    setIsFetching(true);
 
-    const filterParams = filters.reduce<Record<string, any>>((acc, filter) => {
-      acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
-      return acc;
-    }, {});
 
-    const res = await axios.post(
-      "http://localhost:8080/api/excel_search", // URL
-      filterParams, // Body (filters sẽ được gửi trong body của POST request)
-      {
-        params: {
-          // Query params (page, size)
-          page: pageIndex,
-          size: pageSize,
-        },
-      }
-    );
 
-    setData(res.data);
 
-    setIsFetching(false);
-
-    return res.data; // Giả định là { content: [], totalPages, totalElements }
-  };
-
-  // Debounce fetchData
-  const debouncedFetchData = debounce(fetchData, 1300);
-
-  useEffect(() => {
-    debouncedFetchData(pagination.pageIndex, pagination.pageSize, filters);
-
-    // Cleanup debounce on unmount
-    return () => {
-      debouncedFetchData.cancel();
-    };
-  }, [pagination.pageIndex, pagination.pageSize, filters]);
-
-  // Handle filter change and trigger the API call
 
   const table = useReactTable({
     data: data?.content ?? [],
@@ -180,102 +131,8 @@ export default function MyTableBill({
         </table>
       </div>
 
-      <PaginationControls table={table} data={data} isFetching={isFetching} />
     </div>
   );
 }
 
-// Pagination controls component
-function PaginationControls({
-  table,
-  data,
-  isFetching,
-}: {
-  table: Table<any>;
-  data: any;
-  isFetching: boolean;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-1 mt-1">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => table.setPageIndex(0)}
-        disabled={!table.getCanPreviousPage()}
-      >
-        {"<<"}
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => table.previousPage()}
-        disabled={!table.getCanPreviousPage()}
-      >
-        {"<"}
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => table.nextPage()}
-        disabled={!table.getCanNextPage()}
-      >
-        {">"}
-      </Button>
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-        disabled={!table.getCanNextPage()}
-      >
-        {">>"}
-      </Button>
 
-      <span className="text-sm">
-        Trang{" "}
-        <strong>
-          {table.getState().pagination.pageIndex + 1} / {data?.totalPages}
-        </strong>
-      </span>
-
-      <div className="flex items-center gap-2">
-        <span className="text-sm">| Đến trang:</span>
-        <Input
-          type="number"
-          min={1}
-          max={data?.totalPages}
-          className="w-20"
-          value={table.getState().pagination.pageIndex + 1}
-          onChange={(e) => {
-            const page = e.target.value ? Number(e.target.value) - 1 : 0;
-            table.setPageIndex(page);
-          }}
-        />
-      </div>
-
-      <Select
-        value={String(table.getState().pagination.pageSize)}
-        onValueChange={(value) => table.setPageSize(Number(value))}
-      >
-        <SelectTrigger className="w-[140px]">
-          <SelectValue placeholder="Số dòng / trang" />
-        </SelectTrigger>
-        <SelectContent>
-          {[10, 20, 30, 50, 100, 500].map((size) => (
-            <SelectItem key={size} value={String(size)}>
-              {`Hiển thị ${size}`}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-
-      {isFetching && (
-        <span className="ml-2 text-sm text-muted-foreground">Đang tải...</span>
-      )}
-      {!isFetching && (
-        <span className="ml-2 text-sm text-muted-foreground">
-          {data?.totalElements}
-        </span>
-      )}
-    </div>
-  );
-}

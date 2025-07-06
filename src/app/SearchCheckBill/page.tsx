@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/popover";
 import { Key, useEffect, useState } from "react";
 import axios from "axios";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, getCoreRowModel, PaginationState, Table, useReactTable } from "@tanstack/react-table";
 import React from "react";
 import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
 import { isEqual } from "lodash";
@@ -62,9 +62,69 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   };
 
   const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
+    const [pagination, setPagination] = useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+
+  const [data, setData] = useState<any | null>(null);
+
+    const table = useReactTable({
+      data: data?.content ?? [],
+      columns: [
+        {
+          id: "stt",
+          header: "STT",
+          cell: ({ row }) =>
+            pagination.pageIndex * pagination.pageSize + row.index + 1,
+        },
+        ...columns, // các cột khác do bạn truyền vào
+      ],
+      pageCount: data?.totalPages ?? -1,
+      state: {
+        pagination,
+      },
+      manualPagination: true,
+      onPaginationChange: setPagination,
+      getCoreRowModel: getCoreRowModel(),
+    });
+
+    const fetchDataReal = async (
+    pageIndex: number,
+    pageSize: number,
+    filters: Array<{ columnId: string; value: any }>
+  ) => {
+
+    const filterParams = filters.reduce<Record<string, any>>((acc, filter) => {
+      acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
+      return acc;
+    }, {});
+
+    const res = await axios.post(
+      "http://localhost:8080/api/excel_search", // URL
+      filterParams, // Body (filters sẽ được gửi trong body của POST request)
+      {
+        params: {
+          // Query params (page, size)
+          page: pageIndex,
+          size: pageSize,
+        },
+      }
+    );
+
+    setData(res.data);
+
+
+    return res.data; // Giả định là { content: [], totalPages, totalElements }
+  };
+
+
+
+
 
   useEffect(() => {
     fetchData();
+    fetchDataReal(0, 10, []); 
   }, []);
 
   const fetchData = async () => {
@@ -488,10 +548,101 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
       <MyTableBill
         {...{
-          // data,
+          data,
           columns,
         }}
       />
+
+            <PaginationControls table={table} data={data}  />
+
     </>
+  );
+}
+
+
+// Pagination controls component
+function PaginationControls({
+  table,
+  data,
+}: {
+  table: Table<any>;
+  data: any;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-1 mt-1">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => table.setPageIndex(0)}
+        disabled={!table.getCanPreviousPage()}
+      >
+        {"<<"}
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => table.previousPage()}
+        disabled={!table.getCanPreviousPage()}
+      >
+        {"<"}
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => table.nextPage()}
+        disabled={!table.getCanNextPage()}
+      >
+        {">"}
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+        disabled={!table.getCanNextPage()}
+      >
+        {">>"}
+      </Button>
+
+      <span className="text-sm">
+        Trang{" "}
+        <strong>
+          {table.getState().pagination.pageIndex + 1} / {data?.totalPages}
+        </strong>
+      </span>
+
+      <div className="flex items-center gap-2">
+        <span className="text-sm">| Đến trang:</span>
+        <Input
+          type="number"
+          min={1}
+          max={data?.totalPages}
+          className="w-20"
+          value={table.getState().pagination.pageIndex + 1}
+          onChange={(e) => {
+            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+            table.setPageIndex(page);
+          }}
+        />
+      </div>
+
+      <Select
+        value={String(table.getState().pagination.pageSize)}
+        onValueChange={(value) => table.setPageSize(Number(value))}
+      >
+        <SelectTrigger className="w-[140px]">
+          <SelectValue placeholder="Số dòng / trang" />
+        </SelectTrigger>
+        <SelectContent>
+          {[10, 20, 30, 50, 100, 500].map((size) => (
+            <SelectItem key={size} value={String(size)}>
+              {`Hiển thị ${size}`}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+
+  
+    </div>
   );
 }
