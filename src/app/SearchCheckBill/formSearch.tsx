@@ -23,6 +23,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { Key, useEffect, useState } from "react";
 import axios from "axios";
 
@@ -34,9 +39,11 @@ const FormSchema = z.object({
   numKQ: z.string().nonempty("This is required"),
   nameTable: z.string(),
   typeTable: z.string(),
+  typeTableSearch: z.string().optional(),
 });
 
 export function InputForm({ onSend }: { onSend: (data: any) => void }) {
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
 
   useEffect(() => {
     fetchData();
@@ -65,7 +72,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
           },
         }
       );
-      setNameColumns(response.data);
+      setNameColumns([{ columnName: "all" }, ...response.data]);
 
       // If the request is successful, set the files in the state
     } catch (err) {
@@ -100,6 +107,7 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
       numKQ: "100",
       nameTable: "",
       typeTable: "",
+      typeTableSearch: "",
     },
   });
 
@@ -180,37 +188,6 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
                             {opt.label}
                           </SelectItem>
                         ))}
-                        </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="typeTable"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Các trường</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn trường nhanh" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {nameColumns.map((opt) => (
-                          <SelectItem
-                            key={String(opt.columnName)}
-                            value={opt.columnName ? String(opt.columnName) : ""}
-                          >
-                            {opt.columnName ? String(opt.columnName) : ""}
-                          </SelectItem>
-                        ))}
                       </SelectContent>
                     </Select>
                   </FormControl>
@@ -218,34 +195,134 @@ export function InputForm({ onSend }: { onSend: (data: any) => void }) {
                 </FormItem>
               )}
             />
+    
+
+            <FormItem>
+              <FormLabel>Thêm trường tìm kiếm</FormLabel>
+              <FormControl>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline">
+                      {selectedFields.length > 0
+                        ? selectedFields.join(", ")
+                        : "Chọn trường nhanh"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[250px] max-h-[300px] overflow-y-auto">
+                    <div className="flex flex-col gap-2">
+                      {nameColumns.map((opt) => {
+                        const column = String(opt.columnName || ""); // ép an toàn về string
+
+                        return (
+                          <label
+                            key={column}
+                            className="flex items-center gap-2"
+                          >
+                            <input
+                              type="checkbox"
+                              value={column}
+                              checked={selectedFields.includes(column)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedFields((prev) =>
+                                  prev.includes(value)
+                                    ? prev.filter((v) => v !== value)
+                                    : [...prev, value]
+                                );
+                              }}
+                            />
+                            <span>{column}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+
+            
+            <FormItem>
+              <FormLabel>Trường Hiển thị</FormLabel>
+              <FormControl>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline">
+                      {selectedFields.length > 0
+                        ? selectedFields.join(", ")
+                        : "Chọn trường nhanh"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[250px] max-h-[300px] overflow-y-auto">
+                    <div className="flex flex-col gap-2">
+                      {nameColumns.map((opt) => {
+                        const column = String(opt.columnName || ""); // ép an toàn về string
+
+                        return (
+                          <label
+                            key={column}
+                            className="flex items-center gap-2"
+                          >
+                            <input
+                              type="checkbox"
+                              value={column}
+                              checked={selectedFields.includes(column)}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedFields((prev) =>
+                                  prev.includes(value)
+                                    ? prev.filter((v) => v !== value)
+                                    : [...prev, value]
+                                );
+                              }}
+                            />
+                            <span>{column}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+
+
           </div>
 
           <div className="flex flex-wrap gap-6 ml-5">
-   
-
             <FormField
               control={form.control}
               name="dateDK"
               render={({ field }) => (
-                <FormItem >
+                <FormItem>
                   <FormLabel>NgayDK từ </FormLabel>
                   <FormControl>
-                    <Input placeholder="yyyy/mm/dd-yyyy/mm/dd"   type="date" {...field} />
+                    <Input
+                      placeholder="yyyy/mm/dd-yyyy/mm/dd"
+                      type="date"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
                 </FormItem>
               )}
             />
-            
+
             <FormField
               control={form.control}
               name="dateDK"
               render={({ field }) => (
-                <FormItem >
+                <FormItem>
                   <FormLabel>NgayDK đến</FormLabel>
                   <FormControl>
-                    <Input placeholder="yyyy/mm/dd-yyyy/mm/dd"   type="date" {...field} />
+                    <Input
+                      placeholder="yyyy/mm/dd-yyyy/mm/dd"
+                      type="date"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
