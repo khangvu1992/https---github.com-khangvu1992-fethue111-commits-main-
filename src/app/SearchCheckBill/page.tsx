@@ -43,19 +43,6 @@ import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
 import { isEqual } from "lodash";
 import Header from "@/components/header";
 
-const FormSchema = z
-  .object({
-    username: z.string(),
-    dateDK: z.string(),
-    mahq: z.string(),
-    hsCode: z.string(),
-    numKQ: z.string().nonempty("This is required"),
-    nameTable: z.string(),
-    typeTable: z.string(),
-    typeTableSearch: z.string().optional(),
-  })
-  .catchall(z.string().optional());
-
 export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [selectedFieldsView, setSelectedFieldsView] = useState<string[]>([]);
@@ -143,7 +130,6 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         }
       );
 
- 
       const newMeta = response.data;
 
       // So sánh trực tiếp nameColumns gốc (metadata)
@@ -152,8 +138,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       // Nếu metadata không thay đổi thì không làm gì
       const isSame = isEqual(nameColumns, newMetaWithAll);
       if (isSame) return;
-        // ✅ Reset toàn bộ form sau submit
-
+      // ✅ Reset toàn bộ form sau submit
 
       // Nếu khác thì set lại tất cả
       setNameColumns(newMetaWithAll);
@@ -185,32 +170,55 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
     { label: "Vận Đơn", value: "VanDon" },
   ];
 
+  const FormSchema = z
+    .object({
+      // username: z.string(),
+      // dateDK: z.string(),
+      // mahq: z.string(),
+      // hsCode: z.string(),
+      numKQ: z.string().nonempty("This is required"),
+      nameTable: z.string(),
+      typeTable: z.string(),
+      // typeTableSearch: z.string().optional(),
+    })
+    .catchall(z.string().optional());
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      username: "",
-      dateDK: "",
-      mahq: "",
-      hsCode: "",
+      // username: "",
+      // dateDK: "",
+      // mahq: "",
+      // hsCode: "",
       numKQ: "1000",
-      typeTable: "",
-      typeTableSearch: "",
+      // typeTable: "",
+      // typeTableSearch: "",
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      const payload = {
-        ...data,
-        selectedFields,
-        selectedFieldsView,
+      const fieldNames = selectedFields.map((field) => field.split("**")[0]);
+      const filtered = fieldNames.reduce<Record<string, any>>((obj, key) => {
+        if (key in data) {
+          obj[key] = data[key];
+        }
+        return obj;
+      }, {});
+
+      let payload2 = {
+        nameTable: data.nameTable,
+        numRows: data.numKQ,
+        pagination: pagination,
+        selectedFields: selectedFieldsView,
+        filtered: filtered,
       };
+      console.log(payload2);
 
       const response = await axios.post(
-        "http://localhost:8080/api/bill_search/search",
-        payload
+        "http://localhost:8080/api/bill_search//find",
+        payload2
       );
-
 
       // Gửi dữ liệu kết quả sang bảng
       onSend(response.data); // hoặc setData nếu bạn giữ state ở đây
