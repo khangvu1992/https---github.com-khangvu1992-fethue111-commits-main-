@@ -32,3 +32,10 @@ type ColumnMeta = {
     //     { accessorKey: "trangthaitk", header: () => "Trạng thái TK", footer: (props) => props.column.id },
     //     { accessorKey: "bpkthsdt", header: () => "BPKTHSDT", footer: (props) => props.column.id },
     //     { accessorKey: "bptq", header: () => "BPTQ", footer: (props) => props.column.id },
+
+    //   const formatNumber = (number: number) => {
+    //     return new Intl.NumberFormat("en-US", {
+    //       minimumFractionDigits: 3, // Đảm bảo có 2 chữ số sau dấu phẩy
+    //       maximumFractionDigits: 3, // Đảm bảo không có quá 2 chữ số sau dấu phẩy
+    //     }).format(number);
+    //   };

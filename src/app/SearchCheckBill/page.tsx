@@ -31,7 +31,13 @@ import {
 } from "@/components/ui/popover";
 import { Key, useEffect, useState } from "react";
 import axios from "axios";
-import { ColumnDef, getCoreRowModel, PaginationState, Table, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  PaginationState,
+  Table,
+  useReactTable,
+} from "@tanstack/react-table";
 import React from "react";
 import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
 import { isEqual } from "lodash";
@@ -54,47 +60,39 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [selectedFieldsView, setSelectedFieldsView] = useState<string[]>([]);
 
-  const formatNumber = (number: number) => {
-    return new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 3, // Đảm bảo có 2 chữ số sau dấu phẩy
-      maximumFractionDigits: 3, // Đảm bảo không có quá 2 chữ số sau dấu phẩy
-    }).format(number);
-  };
-
   const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
-    const [pagination, setPagination] = useState<PaginationState>({
-      pageIndex: 0,
-      pageSize: 10,
-    });
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
 
   const [data, setData] = useState<any | null>(null);
 
-    const table = useReactTable({
-      data: data?.content ?? [],
-      columns: [
-        {
-          id: "stt",
-          header: "STT",
-          cell: ({ row }) =>
-            pagination.pageIndex * pagination.pageSize + row.index + 1,
-        },
-        ...columns, // các cột khác do bạn truyền vào
-      ],
-      pageCount: data?.totalPages ?? -1,
-      state: {
-        pagination,
+  const table = useReactTable({
+    data: data?.content ?? [],
+    columns: [
+      {
+        id: "stt",
+        header: "STT",
+        cell: ({ row }) =>
+          pagination.pageIndex * pagination.pageSize + row.index + 1,
       },
-      manualPagination: true,
-      onPaginationChange: setPagination,
-      getCoreRowModel: getCoreRowModel(),
-    });
+      ...columns, // các cột khác do bạn truyền vào
+    ],
+    pageCount: data?.totalPages ?? -1,
+    state: {
+      pagination,
+    },
+    manualPagination: true,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
-    const fetchDataReal = async (
+  const fetchDataReal = async (
     pageIndex: number,
     pageSize: number,
     filters: Array<{ columnId: string; value: any }>
   ) => {
-
     const filterParams = filters.reduce<Record<string, any>>((acc, filter) => {
       acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
       return acc;
@@ -114,17 +112,12 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
     setData(res.data);
 
-
     return res.data; // Giả định là { content: [], totalPages, totalElements }
   };
 
-
-
-
-
   useEffect(() => {
     fetchData();
-    fetchDataReal(0, 10, []); 
+    fetchDataReal(0, 10, []);
   }, []);
 
   const fetchData = async () => {
@@ -150,6 +143,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         }
       );
 
+ 
       const newMeta = response.data;
 
       // So sánh trực tiếp nameColumns gốc (metadata)
@@ -158,6 +152,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       // Nếu metadata không thay đổi thì không làm gì
       const isSame = isEqual(nameColumns, newMetaWithAll);
       if (isSame) return;
+        // ✅ Reset toàn bộ form sau submit
+
 
       // Nếu khác thì set lại tất cả
       setNameColumns(newMetaWithAll);
@@ -215,8 +211,10 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         payload
       );
 
+
       // Gửi dữ liệu kết quả sang bảng
       onSend(response.data); // hoặc setData nếu bạn giữ state ở đây
+
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
       console.error("Error during search:", err);
@@ -451,8 +449,6 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
                 />
               );
             })}
-
-      
           </div>
 
           {/* <div className="flex flex-wrap gap-6 ml-5">
@@ -553,21 +549,13 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         }}
       />
 
-            <PaginationControls table={table} data={data}  />
-
+      <PaginationControls table={table} data={data} />
     </>
   );
 }
 
-
 // Pagination controls component
-function PaginationControls({
-  table,
-  data,
-}: {
-  table: Table<any>;
-  data: any;
-}) {
+function PaginationControls({ table, data }: { table: Table<any>; data: any }) {
   return (
     <div className="flex flex-wrap items-center gap-1 mt-1">
       <Button
@@ -640,9 +628,6 @@ function PaginationControls({
           ))}
         </SelectContent>
       </Select>
-
-
-  
     </div>
   );
 }
