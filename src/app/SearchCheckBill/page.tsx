@@ -46,6 +46,7 @@ import Header from "@/components/header";
 export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [selectedFieldsView, setSelectedFieldsView] = useState<string[]>([]);
+  const [selectedFieldsOrder, setSelectedFieldsOrder] = useState<string[]>([]);
 
   const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -131,8 +132,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       );
 
       const newMeta = response.data;
-
       // So sánh trực tiếp nameColumns gốc (metadata)
+      setNameColumnsOrder(newMeta);
       const newMetaWithAll = [{ columnName: "all" }, ...newMeta];
 
       // Nếu metadata không thay đổi thì không làm gì
@@ -144,6 +145,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       setNameColumns(newMetaWithAll);
       setSelectedFields([]);
       setSelectedFieldsView([]);
+      setSelectedFieldsOrder([]);
 
       const generated = generateColumnsFromMeta(newMeta);
       setColumns(generated);
@@ -159,6 +161,9 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   };
   const [optionTable, setOptionTable] = useState<OptionTableItem[]>([]);
   const [nameColumns, setNameColumns] = useState<OptionTableItem[]>([]);
+  const [nameColumnsOrder, setNameColumnsOrder] = useState<OptionTableItem[]>(
+    []
+  );
 
   const typeOptionsTable = [
     { label: "Nhập khẩu", value: "nhapKhau" },
@@ -176,9 +181,10 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       // dateDK: z.string(),
       // mahq: z.string(),
       // hsCode: z.string(),
-      numKQ: z.string().nonempty("This is required"),
+      // numKQ: z.string().nonempty("This is required"),
       nameTable: z.string(),
       typeTable: z.string(),
+      // orderBy: z.string(),
       // typeTableSearch: z.string().optional(),
     })
     .catchall(z.string().optional());
@@ -190,7 +196,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       // dateDK: "",
       // mahq: "",
       // hsCode: "",
-      numKQ: "1000",
+      // numKQ: "1000",
       // typeTable: "",
       // typeTableSearch: "",
     },
@@ -204,15 +210,14 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       console.log("Selected fields view:", data);
 
       const filtered = mapFiltered(fieldNames, data);
-console.log(filtered);
-
 
       let payload2 = {
         nameTable: data.nameTable,
-        numRows: data.numKQ,
+        // numRows: data.numKQ,
         pagination: pagination,
         selectedFields: selectedFieldsView,
         filtered: filtered,
+        order: selectedFieldsOrder,
       };
       console.log(payload2);
 
@@ -230,6 +235,15 @@ console.log(filtered);
       toast.error("Lỗi khi tìm kiếm");
     }
   }
+
+  useEffect(() => {
+    if (nameColumnsOrder.length > 0 && selectedFieldsOrder.length === 0) {
+      const firstColumn = nameColumnsOrder[0].columnName;
+      if (firstColumn) {
+        setSelectedFieldsOrder([String(firstColumn)]);
+      }
+    }
+  }, [nameColumnsOrder]);
 
   return (
     <>
@@ -401,7 +415,65 @@ console.log(filtered);
               <FormMessage />
             </FormItem>
 
-            <FormField
+            <FormItem>
+              <FormLabel>Sắp xếp</FormLabel>
+              <FormControl>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline">
+                      {selectedFieldsOrder.length > 0
+                        ? selectedFieldsOrder.join(", ")
+                        : "Chọn trường nhanh"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[250px] max-h-[300px] overflow-y-auto">
+                    <div className="flex flex-col gap-2">
+                      {nameColumnsOrder.map((opt) => {
+                        const column = opt; // ép an toàn về string
+                        return (
+                          <>
+                            <label
+                              key={column.columnName}
+                              className="flex items-center gap-2"
+                            >
+                              <input
+                                type="checkbox"
+                                value={String(column.columnName) || ""}
+                                checked={selectedFieldsOrder.includes(
+                                  String(column.columnName || "")
+                                )}
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  setSelectedFieldsOrder((prev) =>
+                                    prev.includes(value)
+                                      ? prev.filter((v) => v !== value)
+                                      : [...prev, value]
+                                  );
+                                }}
+
+                                // onChange={(e) => {
+                                //   const value = e.target.value;
+
+                                //   // Nếu click chọn -> chỉ chọn giá trị đó, bỏ các cái khác
+                                //   // Nếu click bỏ chọn -> set về []
+                                //   setSelectedFieldsOrder((prev) =>
+                                //     prev.includes(value) ? [] : [value]
+                                //   );
+                                // }}
+                              />
+                              <span>{column.columnName}</span>
+                            </label>
+                          </>
+                        );
+                      })}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+
+            {/* <FormField
               control={form.control}
               name="numKQ"
               render={({ field }) => (
@@ -417,10 +489,94 @@ console.log(filtered);
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
+          </div>
+          <div className="flex flex-wrap gap-6 ml-5">
+            {selectedFields.map((field) => {
+              const [fieldName, rawType] = field.split("**");
+              const dataType = rawType?.toLowerCase() || "";
+
+              const isDateType =
+                dataType.includes("date") || dataType.includes("time");
+
+              const isNumberType =
+                dataType.includes("int") ||
+                dataType.includes("decimal") ||
+                dataType.includes("float") ||
+                dataType.includes("double");
+
+              const inputType = isDateType
+                ? "date"
+                : isNumberType
+                ? "number"
+                : "text";
+
+              if (isDateType || isNumberType) {
+                return (
+                  <React.Fragment key={fieldName}>
+                    <FormField
+                      control={form.control}
+                      name={`${fieldName}_from`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{fieldName} từ</FormLabel>
+                          <FormControl>
+                            <Input
+                              type={inputType}
+                              {...field}
+                              placeholder={`Từ ${fieldName}`}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`${fieldName}_to`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{fieldName} đến</FormLabel>
+                          <FormControl>
+                            <Input
+                              type={inputType}
+                              {...field}
+                              placeholder={`Đến ${fieldName}`}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </React.Fragment>
+                );
+              }
+
+              // Trường kiểu khác (text, nvarchar,...)
+              return (
+                <FormField
+                  key={fieldName}
+                  control={form.control}
+                  name={fieldName}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{fieldName}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="text"
+                          {...field}
+                          placeholder={`Nhập ${fieldName}`}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              );
+            })}
           </div>
 
-          <div className="flex flex-wrap gap-6 ml-5">
+          {/* <div className="flex flex-wrap gap-6 ml-5">
             {selectedFields.map((field) => {
               const [fieldName, rawType] = field.split("**");
               const dataType = rawType?.toLowerCase() || "";
@@ -502,7 +658,7 @@ console.log(filtered);
                 );
               }
             })}
-          </div>
+          </div> */}
 
           {/* <div className="flex flex-wrap gap-6 ml-5">
             <FormField
