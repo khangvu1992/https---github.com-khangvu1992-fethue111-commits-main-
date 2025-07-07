@@ -47,7 +47,6 @@ export default function MyTableBill({
     pageSize: 10,
   });
 
-  console.log(data)
 
 
 

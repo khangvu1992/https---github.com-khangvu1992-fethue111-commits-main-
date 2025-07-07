@@ -203,17 +203,12 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("Submitted data:", data);
     try {
       const fieldNames = selectedFields.map((field) => field.split("**")[0]);
-      console.log("Selected fields:", fieldNames);
-      console.log("Selected fields view:", data);
 
       const filtered = mapFiltered(fieldNames, data);
-      console.log(filtered)
 
       const cleaned = cleanFilterObject(filtered);
-      console.log(cleaned)
 
 
 
@@ -226,7 +221,6 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         filtered: cleaned,
         order: selectedFieldsOrder,
       };
-      console.log(payload2);
 
       const response = await axios.post(
         "http://localhost:8080/api/bill_search1/find",
