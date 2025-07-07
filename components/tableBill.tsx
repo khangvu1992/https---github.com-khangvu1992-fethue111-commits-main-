@@ -47,6 +47,8 @@ export default function MyTableBill({
     pageSize: 10,
   });
 
+  console.log(data)
+
 
 
 
@@ -55,7 +57,7 @@ export default function MyTableBill({
 
 
   const table = useReactTable({
-    data: data?.content ?? [],
+    data: data?.data ?? [],
     columns: [
       {
         id: "stt",
