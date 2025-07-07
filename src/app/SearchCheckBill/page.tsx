@@ -210,6 +210,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       console.log("Selected fields view:", data);
 
       const filtered = mapFiltered(fieldNames, data);
+      console.log(filtered)
 
       const cleaned = cleanFilterObject(filtered);
       console.log(cleaned)
@@ -873,8 +874,10 @@ function mapFiltered(selectedFields: string[], data: Record<string, any>) {
 function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, value]) => {
-      if (typeof value !== 'object' || value === null) return false;
+      // Giữ nếu không phải object (string, number, boolean, v.v.)
+      if (typeof value !== 'object' || value === null) return true;
 
+      // Nếu là object, kiểm tra from/to có giá trị không rỗng
       const hasValidFrom = 'from' in value && value.from != null && value.from !== '';
       const hasValidTo = 'to' in value && value.to != null && value.to !== '';
 
