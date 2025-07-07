@@ -43,7 +43,7 @@ import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
 import { isEqual, set } from "lodash";
 import Header from "@/components/header";
 
-export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
+export default function dashboard() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
   const [selectedFieldsView, setSelectedFieldsView] = useState<string[]>([]);
   const [selectedFieldsOrder, setSelectedFieldsOrder] = useState<string[]>([]);
