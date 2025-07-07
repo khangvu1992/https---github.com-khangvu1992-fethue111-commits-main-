@@ -40,7 +40,7 @@ import {
 } from "@tanstack/react-table";
 import React from "react";
 import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
-import { isEqual } from "lodash";
+import { isEqual, set } from "lodash";
 import Header from "@/components/header";
 
 export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
@@ -49,12 +49,31 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   const [selectedFieldsOrder, setSelectedFieldsOrder] = useState<string[]>([]);
 
   const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
+  const [allColumns, setAllColumns] = useState<any[]>([]);
+
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
   const [data, setData] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (selectedFieldsView.length === 0) {
+      const generated1 = generateColumnsFromMeta(allColumns);
+      setColumns(generated1)
+      return
+    } else {
+      const filtered = filterSelectedFields(allColumns, selectedFieldsView);
+      const generated2 = generateColumnsFromMeta(filtered);
+      setColumns(generated2)
+      
+    }
+  }, [selectedFieldsView, allColumns]);
+
+
+  
 
   const table = useReactTable({
     data: data?.content ?? [],
@@ -148,7 +167,9 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       setSelectedFieldsOrder([]);
 
       const generated = generateColumnsFromMeta(newMeta);
+      setAllColumns(newMeta)
       setColumns(generated);
+      console.log(allColumns)
     } catch (err) {
       console.error("Error fetching files:", err);
     }
@@ -904,6 +925,14 @@ function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
   );
 }
 
+
+
+function filterSelectedFields(
+  allFields: any[],
+  selectedFieldsView: string[]
+): any[] {
+  return allFields.filter(field => selectedFieldsView.includes(field.columnName));
+}
 
 
 
