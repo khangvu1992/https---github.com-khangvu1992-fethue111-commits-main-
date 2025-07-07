@@ -211,6 +211,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
       const filtered = mapFiltered(fieldNames, data);
 
+      const cleaned = cleanFilterObject(filtered);
+      console.log(cleaned)
 
 
 
@@ -220,7 +222,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         // numRows: data.numKQ,
         pagination: pagination,
         selectedFields: selectedFieldsView,
-        filtered: filtered,
+        filtered: cleaned,
         order: selectedFieldsOrder,
       };
       console.log(payload2);
@@ -845,27 +847,6 @@ function PaginationControls({ table, data }: { table: Table<any>; data: any }) {
   );
 }
 
-// function mapFiltered(selectedFields: string[], data: Record<string, any>) {
-//   return selectedFields.reduce((acc, field) => {
-//     const fromKey = `${field}_from`;
-//     const toKey = `${field}_to`;
-
-//     const hasFrom = fromKey in data;
-//     const hasTo = toKey in data;
-
-//     if (hasFrom || hasTo) {
-//       acc[field] = {};
-//       if (hasFrom) acc[field].from = data[fromKey];
-//       if (hasTo) acc[field].to = data[toKey];
-//     } else if (field in data) {
-//       acc[field] = data[field];
-//     }
-
-//     return acc;
-//   }, {} as Record<string, any>);
-// }
-
-
 function mapFiltered(selectedFields: string[], data: Record<string, any>) {
   return selectedFields.reduce((acc, field) => {
     const fromKey = `${field}_from`;
@@ -875,28 +856,33 @@ function mapFiltered(selectedFields: string[], data: Record<string, any>) {
     const hasTo = toKey in data;
 
     if (hasFrom || hasTo) {
-      const fromValue = data[fromKey];
-      const toValue = data[toKey];
-
-      const range: any = {};
-      if (fromValue !== null && fromValue !== "") range.from = fromValue;
-      if (toValue !== null && toValue !== "") range.to = toValue;
-
-      if (Object.keys(range).length > 0) {
-        acc[field] = range;
-      }
+      acc[field] = {};
+      if (hasFrom) acc[field].from = data[fromKey];
+      if (hasTo) acc[field].to = data[toKey];
     } else if (field in data) {
-      const value = data[field];
-      // Kiểm tra khác null, "", và {} nếu là object
-      const isObject = typeof value === "object" && value !== null;
-      const isEmptyObject = isObject && Object.keys(value).length === 0;
-
-      if (value !== null && value !== "" && !isEmptyObject) {
-        acc[field] = value;
-      }
+      acc[field] = data[field];
     }
 
     return acc;
   }, {} as Record<string, any>);
 }
+
+
+
+
+function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, value]) => {
+      if (typeof value !== 'object' || value === null) return false;
+
+      const hasValidFrom = 'from' in value && value.from != null && value.from !== '';
+      const hasValidTo = 'to' in value && value.to != null && value.to !== '';
+
+      return hasValidFrom || hasValidTo;
+    })
+  );
+}
+
+
+
 
