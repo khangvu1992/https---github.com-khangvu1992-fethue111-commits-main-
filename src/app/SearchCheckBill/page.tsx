@@ -50,6 +50,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
   const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
   const [allColumns, setAllColumns] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
 
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -224,6 +226,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsLoading(true); // 👉 bật loading
+
     try {
       const fieldNames = selectedFields.map((field) => field.split("**")[0]);
 
@@ -249,12 +253,19 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       );
 
       // Gửi dữ liệu kết quả sang bảng
+
       setData(response);
 
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
+
+      console.log("fffffffffffffffffff");
+      
+      
       console.error("Error during search:", err);
       toast.error("Lỗi khi tìm kiếm");
+    } finally {
+      setIsLoading(false); // 👉 tắt loading dù thành công hay thất bại
     }
   }
 
@@ -766,7 +777,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
               )}
             />
           </div> */}
-          <Button type="submit">Tìm kiếm</Button>
+          <Button type="submit"  disabled={isLoading} > {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}</Button>
           {/* <Button type="button" onClick={handleExportToExcel}>
             Excel
           </Button> */}
