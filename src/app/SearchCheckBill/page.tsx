@@ -183,7 +183,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       // hsCode: z.string(),
       // numKQ: z.string().nonempty("This is required"),
       nameTable: z.string(),
-      typeTable: z.string(),
+      // typeTable: z.string(),
       // orderBy: z.string(),
       // typeTableSearch: z.string().optional(),
     })
@@ -288,7 +288,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
               )}
             />
 
-            <FormField
+            {/* <FormField
               control={form.control}
               name="typeTable"
               render={({ field }) => (
@@ -314,7 +314,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormItem>
               <FormLabel>Thêm trường tìm kiếm</FormLabel>
@@ -756,6 +756,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
       <MyTableBill
         {...{
+          pagination,
           data,
           columns,
         }}

@@ -35,17 +35,14 @@ import clsx from "clsx";
 // Hàm gọi API, thêm các tham số phân trang và bộ lọc vào truy vấn
 
 export default function MyTableBill({
+  pagination,
  data,
  columns,
 }: {
-  data: any,columns: any;
+  pagination:any, data: any,columns: any;
 }) {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
 
 
 
@@ -71,7 +68,6 @@ export default function MyTableBill({
       pagination,
     },
     manualPagination: true,
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
   });
 
