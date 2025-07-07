@@ -86,21 +86,21 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       return acc;
     }, {});
 
-    const res = await axios.post(
-      "http://localhost:8080/api/excel_search", // URL
-      filterParams, // Body (filters sẽ được gửi trong body của POST request)
-      {
-        params: {
-          // Query params (page, size)
-          page: pageIndex,
-          size: pageSize,
-        },
-      }
-    );
+    // const res = await axios.post(
+    //   "http://localhost:8080/api/excel_search", // URL
+    //   filterParams, // Body (filters sẽ được gửi trong body của POST request)
+    //   {
+    //     params: {
+    //       // Query params (page, size)
+    //       page: pageIndex,
+    //       size: pageSize,
+    //     },
+    //   }
+    // );
 
-    setData(res.data);
+    // setData(res.data);
 
-    return res.data; // Giả định là { content: [], totalPages, totalElements }
+    // return res.data; // Giả định là { content: [], totalPages, totalElements }
   };
 
   useEffect(() => {
@@ -234,7 +234,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       );
 
       // Gửi dữ liệu kết quả sang bảng
-      onSend(response.data); // hoặc setData nếu bạn giữ state ở đây
+      setData(response);
 
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
@@ -757,6 +757,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
           </Button> */}
         </form>
       </Form>
+      <PaginationControls table={table} data={data} />
+
 
       <MyTableBill
         {...{
@@ -765,7 +767,6 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
         }}
       />
 
-      <PaginationControls table={table} data={data} />
     </>
   );
 }
