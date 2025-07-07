@@ -211,6 +211,8 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
       const filtered = mapFiltered(fieldNames, data);
 
+      
+
       let payload2 = {
         nameTable: data.nameTable,
         // numRows: data.numKQ,
@@ -222,7 +224,7 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
       console.log(payload2);
 
       const response = await axios.post(
-        "http://localhost:8080/api/bill_search//find",
+        "http://localhost:8080/api/bill_search1/find",
         payload2
       );
 
