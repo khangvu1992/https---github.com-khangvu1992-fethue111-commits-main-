@@ -211,8 +211,10 @@ export default function dashboard({ onSend }: { onSend: (data: any) => void }) {
 
       const filtered = mapFiltered(fieldNames, data);
 
-      
 
+
+
+      
       let payload2 = {
         nameTable: data.nameTable,
         // numRows: data.numKQ,
