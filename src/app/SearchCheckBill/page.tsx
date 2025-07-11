@@ -52,8 +52,6 @@ export default function dashboard() {
   const [allColumns, setAllColumns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-
-
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -64,18 +62,14 @@ export default function dashboard() {
   useEffect(() => {
     if (selectedFieldsView.length === 0) {
       const generated1 = generateColumnsFromMeta(allColumns);
-      setColumns(generated1)
-      return
+      setColumns(generated1);
+      return;
     } else {
       const filtered = filterSelectedFields(allColumns, selectedFieldsView);
       const generated2 = generateColumnsFromMeta(filtered);
-      setColumns(generated2)
-      
+      setColumns(generated2);
     }
   }, [selectedFieldsView, allColumns]);
-
-
-  
 
   const table = useReactTable({
     data: data?.content ?? [],
@@ -169,9 +163,9 @@ export default function dashboard() {
       setSelectedFieldsOrder([]);
 
       const generated = generateColumnsFromMeta(newMeta);
-      setAllColumns(newMeta)
+      setAllColumns(newMeta);
       setColumns(generated);
-      console.log(allColumns)
+      console.log(allColumns);
     } catch (err) {
       console.error("Error fetching files:", err);
     }
@@ -235,9 +229,6 @@ export default function dashboard() {
 
       const cleaned = cleanFilterObject(filtered);
 
-
-
-
       let payload2 = {
         nameTable: data.nameTable,
         // numRows: data.numKQ,
@@ -258,10 +249,8 @@ export default function dashboard() {
 
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
-
       console.log("fffffffffffffffffff");
-      
-      
+
       console.error("Error during search:", err);
       toast.error("Lỗi khi tìm kiếm");
     } finally {
@@ -355,7 +344,7 @@ export default function dashboard() {
                   <PopoverTrigger asChild>
                     <Button variant="outline">
                       {selectedFields.length > 0
-                        ? selectedFields.join(", ")
+                        ? selectedFields.map((v) => v.split("**")[0]).join(", ")
                         : "Chọn trường nhanh"}
                     </Button>
                   </PopoverTrigger>
@@ -777,14 +766,16 @@ export default function dashboard() {
               )}
             />
           </div> */}
-          <Button type="submit"  disabled={isLoading} > {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}</Button>
+          <Button type="submit" disabled={isLoading}>
+            {" "}
+            {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}
+          </Button>
           {/* <Button type="button" onClick={handleExportToExcel}>
             Excel
           </Button> */}
         </form>
       </Form>
-      <PaginationControls table={table} data={data} />
-
+      <PaginationControls table={table} />
 
       <MyTableBill
         {...{
@@ -793,13 +784,12 @@ export default function dashboard() {
           columns,
         }}
       />
-
     </>
   );
 }
 
 // Pagination controls component
-function PaginationControls({ table, data }: { table: Table<any>; data: any }) {
+function PaginationControls({ table }: { table: Table<any> }) {
   return (
     <div className="flex flex-wrap items-center gap-1 mt-1">
       <Button
@@ -836,10 +826,7 @@ function PaginationControls({ table, data }: { table: Table<any>; data: any }) {
       </Button>
 
       <span className="text-sm">
-        Trang{" "}
-        <strong>
-          {table.getState().pagination.pageIndex + 1} / {data?.totalPages}
-        </strong>
+        Trang <strong>{table.getState().pagination.pageIndex + 1}</strong>
       </span>
 
       <div className="flex items-center gap-2">
@@ -847,7 +834,6 @@ function PaginationControls({ table, data }: { table: Table<any>; data: any }) {
         <Input
           type="number"
           min={1}
-          max={data?.totalPages}
           className="w-20"
           value={table.getState().pagination.pageIndex + 1}
           onChange={(e) => {
@@ -896,9 +882,6 @@ function mapFiltered(selectedFields: string[], data: Record<string, any>) {
   }, {} as Record<string, any>);
 }
 
-
-
-
 // function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
 //   return Object.fromEntries(
 //     Object.entries(obj).filter(([_, value]) => {
@@ -914,19 +897,19 @@ function mapFiltered(selectedFields: string[], data: Record<string, any>) {
 //   );
 // }
 
-
 function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
   return Object.fromEntries(
     Object.entries(obj).filter(([_, value]) => {
-      if (value === null || value === '' || value === undefined) {
+      if (value === null || value === "" || value === undefined) {
         return false; // ❌ xoá nếu là string rỗng, null, undefined
       }
 
-      if (typeof value === 'object') {
+      if (typeof value === "object") {
         if (value === null) return false;
 
-        const hasValidFrom = 'from' in value && value.from != null && value.from !== '';
-        const hasValidTo = 'to' in value && value.to != null && value.to !== '';
+        const hasValidFrom =
+          "from" in value && value.from != null && value.from !== "";
+        const hasValidTo = "to" in value && value.to != null && value.to !== "";
 
         return hasValidFrom || hasValidTo;
       }
@@ -936,14 +919,11 @@ function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
   );
 }
 
-
-
 function filterSelectedFields(
   allFields: any[],
   selectedFieldsView: string[]
 ): any[] {
-  return allFields.filter(field => selectedFieldsView.includes(field.columnName));
+  return allFields.filter((field) =>
+    selectedFieldsView.includes(field.columnName)
+  );
 }
-
-
-
