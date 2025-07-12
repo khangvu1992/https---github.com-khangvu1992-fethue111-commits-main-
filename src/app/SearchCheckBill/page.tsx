@@ -775,12 +775,12 @@ export default function dashboard() {
           </Button> */}
         </form>
       </Form>
-      <PaginationControls table={table} />
+      <PaginationControls table={table}  data={data}/>
 
       <MyTableBill
         {...{
           pagination,
-          data,
+          data: data?.data,
           columns,
         }}
       />
@@ -789,7 +789,7 @@ export default function dashboard() {
 }
 
 // Pagination controls component
-function PaginationControls({ table }: { table: Table<any> }) {
+function PaginationControls({ table, data }: { table: Table<any>; data?: any }) {
   return (
     <div className="flex flex-wrap items-center gap-1 mt-1">
       <Button
@@ -858,6 +858,7 @@ function PaginationControls({ table }: { table: Table<any> }) {
           ))}
         </SelectContent>
       </Select>
+      <span className="ml-2 text-sm ">{data?.data?.total}</span>
     </div>
   );
 }
