@@ -42,6 +42,7 @@ import React from "react";
 import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
 import { isEqual, set } from "lodash";
 import Header from "@/components/header";
+import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function dashboard() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -59,6 +60,8 @@ export default function dashboard() {
   });
 
   const [data, setData] = useState<any | null>(null);
+  const [openConfirm, setOpenConfirm] = useState(false);
+
 
   useEffect(() => {
     if (selectedFieldsView.length === 0) {
@@ -816,7 +819,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
           </Button>
           <span>     </span>
                  <Button   type="button"
-  onClick={() => exportExcel(form.getValues())}
+  onClick={() => setOpenConfirm(true)}
   disabled={isLoadingExcel}>
               {" "}
             {isLoadingExcel ? "Đang tạo..." : "Excel"}
@@ -835,6 +838,25 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
           columns,
         }}
       />
+
+
+ <ConfirmDialog
+  open={openConfirm}
+  onOpenChange={setOpenConfirm}
+  title={
+    <span>
+      Bạn chắc chắn export{" "}
+      <span className="text-red-600 font-semibold">
+        {data?.data?.total?.toLocaleString()} 
+      </span>{" "}
+      kết quả tìm kiếm?
+    </span>
+  }
+  description="Hành động này không thể hoàn tác."
+  onConfirm={() => exportExcel(form.getValues())}
+/>
+
+
     </>
   );
 }
