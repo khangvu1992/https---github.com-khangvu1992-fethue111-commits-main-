@@ -909,7 +909,7 @@ function PaginationControls({ table, data }: { table: Table<any>; data?: any }) 
           ))}
         </SelectContent>
       </Select>
-      <span className="ml-2 text-sm ">{data?.data?.total}</span>
+      <span className="ml-2 text-sm ">Kết quả: {data?.data?.total}</span>
     </div>
   );
 }
