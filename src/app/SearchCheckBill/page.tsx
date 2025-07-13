@@ -51,6 +51,7 @@ export default function dashboard() {
   const [columns, setColumns] = useState<ColumnDef<any>[]>([]);
   const [allColumns, setAllColumns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingExcel, setIsLoadingExcel] = useState(false);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -218,6 +219,47 @@ export default function dashboard() {
       // typeTableSearch: "",
     },
   });
+
+const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
+  setIsLoadingExcel(true); // Bật loading nếu bạn muốn
+
+  try {
+    const fieldNames = selectedFields.map((field) => field.split("**")[0]);
+      const filtered = mapFiltered(fieldNames, data);
+    const cleaned = cleanFilterObject(filtered);
+
+    const payload = {
+        nameTable: data.nameTable,
+      selectedFields: selectedFieldsView,
+      filtered: cleaned,
+      order: selectedFieldsOrder,
+    };
+
+    const response = await fetch("http://localhost:8080/api/bill_search1/export", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error("Export thất bại");
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "ket_qua.xlsx";
+    a.click();
+    toast.success("✅ Xuất Excel thành công!");
+  } catch (error) {
+    console.error("Lỗi export:", error);
+    toast.error("❌ Lỗi khi xuất Excel");
+  } finally {
+    setIsLoadingExcel(false); // Tắt loading
+  }
+};
+
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true); // 👉 bật loading
@@ -769,6 +811,13 @@ export default function dashboard() {
           <Button type="submit" disabled={isLoading}>
             {" "}
             {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}
+          </Button>
+          <span>     </span>
+                 <Button   type="button"
+  onClick={() => exportExcel(form.getValues())}
+  disabled={isLoadingExcel}>
+              {" "}
+            {isLoadingExcel ? "Đang tạo..." : "Excel"}
           </Button>
           {/* <Button type="button" onClick={handleExportToExcel}>
             Excel
