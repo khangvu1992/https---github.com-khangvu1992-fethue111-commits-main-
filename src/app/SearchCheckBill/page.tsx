@@ -150,7 +150,9 @@ export default function dashboard() {
       const newMeta = response.data;
       // So sánh trực tiếp nameColumns gốc (metadata)
       setNameColumnsOrder(newMeta);
-      const newMetaWithAll = [{ columnName: "all" }, ...newMeta];
+      const newMetaWithAll = [ ...newMeta];
+            // const newMetaWithAll = [{ columnName: "all" }, ...newMeta];
+
 
       // Nếu metadata không thay đổi thì không làm gì
       const isSame = isEqual(nameColumns, newMetaWithAll);
