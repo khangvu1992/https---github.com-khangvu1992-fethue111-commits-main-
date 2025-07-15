@@ -23,12 +23,15 @@ export default function ImportExcelAirHouseBill() {
   const [loading, setLoading] = useState(true); // State for loading status
   const [error, setError] = useState(""); // State for error handling
   const [duplicate, setDuplicate] = useState(""); // State for error handling
+    const host = window.location.hostname;
+  const API = `http://${host}:8080`;
+
 
   const fetchFiles = async () => {
     console.log("Fetching files...");
     try {
       // Replace with your API endpoint
-      const response = await axios.get("http://localhost:8080/api/files/");
+      const response = await axios.get(`${API}/api/files/`);
 
       // If the request is successful, set the files in the state
       setFiles(response.data);
@@ -66,7 +69,7 @@ export default function ImportExcelAirHouseBill() {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/AirHouseBill/import-AirHouseBill",
+        `${API}/api/AirHouseBill/import-AirHouseBill`,
         formData,
         {
           headers: {

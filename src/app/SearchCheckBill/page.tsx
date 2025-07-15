@@ -62,6 +62,9 @@ export default function dashboard() {
   const [data, setData] = useState<any | null>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
 
+  const host = window.location.hostname;
+  const API = `http://${host}:8080`;
+
 
   useEffect(() => {
     if (selectedFieldsView.length === 0) {
@@ -130,7 +133,7 @@ export default function dashboard() {
   const fetchData = async () => {
     try {
       // Replace with your API endpoint
-      const response = await axios.get("http://localhost:8080/api/bill_search");
+      const response = await axios.get(`${API}/api/bill_search`);
       setOptionTable(response.data);
 
       // If the request is successful, set the files in the state
@@ -142,7 +145,7 @@ export default function dashboard() {
   const fetchData2 = async (name: string) => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/bill_search/nameColumns",
+        `${API}/api/bill_search/nameColumns`,
         {
           params: {
             tableName: name,
@@ -240,7 +243,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       order: selectedFieldsOrder,
     };
 
-    const response = await fetch("http://localhost:8080/api/bill_search1/export", {
+    const response = await fetch(`${API}/api/bill_search1/export`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -286,7 +289,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       };
 
       const response = await axios.post(
-        "http://localhost:8080/api/bill_search1/find",
+        `${API}/api/bill_search1/find`,
         payload2
       );
 
@@ -852,7 +855,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       kết quả tìm kiếm?
     </span>
   }
-  description="Hành động này không thể hoàn tác."
+  description="Hành động này không thể hoàn tác, phải chờ một chút để hệ thống xử lý dữ liệu, phải ấn Tìm kiếm trước khi export excel"
   onConfirm={() => exportExcel(form.getValues())}
 />
 
