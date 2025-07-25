@@ -655,7 +655,7 @@ export default function dashboard() {
           </TooltipProvider>
         </form>
       </Form>
-      <PaginationControls table={table} data={data} />
+      <PaginationControls table={table} data={data} /> 
 
       <MyTableBill
         {...{
@@ -664,6 +664,10 @@ export default function dashboard() {
           columns,
         }}
       />
+            <span className="ml-2 text-sm ">kim ngạch xuất khẩu: {data?.data?.total}4343</span>
+
+
+       <Header title="Thống kê"></Header>
 
       <ConfirmDialog
         open={openConfirm}
@@ -760,7 +764,12 @@ function PaginationControls({
           ))}
         </SelectContent>
       </Select>
-      <span className="ml-2 text-sm ">Kết quả: {data?.data?.total}</span>
+      <span className="ml-2 text-sm  ">Kết quả: {data?.data?.total}</span>
+      <span className="ml-2 text-sm bg-orange-200">Tổng  tờ khai: {data?.data?.total}5656454</span>
+      <span className="ml-2 text-sm bg-yellow-200 ">Doanh nghiệp: {data?.data?.total}4343</span>
+      <span className="ml-2 text-sm bg-lime-200 ">Doanh nghiệp trọng điểm: {data?.data?.total}4343</span>
+
+
     </div>
   );
 }
