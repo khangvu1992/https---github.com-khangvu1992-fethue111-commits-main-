@@ -32,6 +32,14 @@ import {
 import { Key, useEffect, useState } from "react";
 import axios from "axios";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   ColumnDef,
   getCoreRowModel,
   PaginationState,
@@ -44,7 +52,14 @@ import { isEqual, set } from "lodash";
 import Header from "@/components/header";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function dashboard() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -57,9 +72,7 @@ export default function dashboard() {
   const [isLoadingExcel, setIsLoadingExcel] = useState(false);
   const [removeDuplicate, setRemoveDuplicate] = useState(false);
   const [duplicateColumn, setDuplicateColumn] = useState(null);
-
-
-  
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -71,7 +84,6 @@ export default function dashboard() {
 
   const host = window.location.hostname;
   const API = `http://${host}:8080`;
-
 
   useEffect(() => {
     if (selectedFieldsView.length === 0) {
@@ -114,8 +126,6 @@ export default function dashboard() {
       acc[filter.columnId] = filter.value; // Thêm filter vào tham số API
       return acc;
     }, {});
-
-
   };
 
   useEffect(() => {
@@ -137,21 +147,17 @@ export default function dashboard() {
 
   const fetchData2 = async (name: string) => {
     try {
-      const response = await axios.get(
-        `${API}/api/bill_search/nameColumns`,
-        {
-          params: {
-            tableName: name,
-          },
-        }
-      );
+      const response = await axios.get(`${API}/api/bill_search/nameColumns`, {
+        params: {
+          tableName: name,
+        },
+      });
 
       const newMeta = response.data;
       // So sánh trực tiếp nameColumns gốc (metadata)
       setNameColumnsOrder(newMeta);
-      const newMetaWithAll = [ ...newMeta];
-            // const newMetaWithAll = [{ columnName: "all" }, ...newMeta];
-
+      const newMetaWithAll = [...newMeta];
+      // const newMetaWithAll = [{ columnName: "all" }, ...newMeta];
 
       // Nếu metadata không thay đổi thì không làm gì
       const isSame = isEqual(nameColumns, newMetaWithAll);
@@ -184,13 +190,9 @@ export default function dashboard() {
     []
   );
 
-
-
   const FormSchema = z
     .object({
- 
       nameTable: z.string(),
- 
     })
     .catchall(z.string().optional());
 
@@ -199,56 +201,54 @@ export default function dashboard() {
     defaultValues: {
       // username: "",
       // dateDK: "",
-
     },
   });
 
-const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
-  setIsLoadingExcel(true); // Bật loading nếu bạn muốn
+  const exportExcel = async (data: z.infer<typeof FormSchema>) => {
+    setIsLoadingExcel(true); // Bật loading nếu bạn muốn
 
-  try {
-    const fieldNames = selectedFields.map((field) => field.split("**")[0]);
+    try {
+      const fieldNames = selectedFields.map((field) => field.split("**")[0]);
       const filtered = mapFiltered(fieldNames, data);
-    const cleaned = cleanFilterObject(filtered);
+      const cleaned = cleanFilterObject(filtered);
 
-    const duplicateColumn2= nameColumns.find((col) => col.columnName === 'sotk' || col.columnName === 'so_to_khai');
+      const duplicateColumn2 = nameColumns.find(
+        (col) => col.columnName === "sotk" || col.columnName === "so_to_khai"
+      );
 
-    const payload = {
+      const payload = {
         nameTable: data.nameTable,
-      selectedFields: selectedFieldsView,
-      filtered: cleaned,
-      order: selectedFieldsOrder,
-      removeDuplicate: removeDuplicate,
-      duplicateColumn: duplicateColumn2?.columnName ?? null
+        selectedFields: selectedFieldsView,
+        filtered: cleaned,
+        order: selectedFieldsOrder,
+        removeDuplicate: removeDuplicate,
+        duplicateColumn: duplicateColumn2?.columnName ?? null,
+      };
 
-  
-    };
+      const response = await fetch(`${API}/api/bill_search1/export`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    const response = await fetch(`${API}/api/bill_search1/export`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      if (!response.ok) {
+        throw new Error("Export thất bại");
+      }
 
-    if (!response.ok) {
-      throw new Error("Export thất bại");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ket_qua.xlsx";
+      a.click();
+      toast.success("✅ Xuất Excel thành công!");
+    } catch (error) {
+      console.error("Lỗi export:", error);
+      toast.error("❌ Lỗi khi xuất Excel");
+    } finally {
+      setIsLoadingExcel(false); // Tắt loading
     }
-
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "ket_qua.xlsx";
-    a.click();
-    toast.success("✅ Xuất Excel thành công!");
-  } catch (error) {
-    console.error("Lỗi export:", error);
-    toast.error("❌ Lỗi khi xuất Excel");
-  } finally {
-    setIsLoadingExcel(false); // Tắt loading
-  }
-};
-
+  };
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true); // 👉 bật loading
@@ -259,7 +259,9 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       const filtered = mapFiltered(fieldNames, data);
 
       const cleaned = cleanFilterObject(filtered);
-        const duplicateColumn2= nameColumns.find((col) => col.columnName === 'sotk' || col.columnName === 'so_to_khai');
+      const duplicateColumn2 = nameColumns.find(
+        (col) => col.columnName === "sotk" || col.columnName === "so_to_khai"
+      );
 
       let payload2 = {
         nameTable: data.nameTable,
@@ -269,8 +271,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
         filtered: cleaned,
         order: selectedFieldsOrder,
         removeDuplicate: removeDuplicate,
-        duplicateColumn: duplicateColumn2?.columnName ?? null
-
+        duplicateColumn: duplicateColumn2?.columnName ?? null,
       };
 
       const response = await axios.post(
@@ -284,7 +285,6 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
 
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
-
       console.error("Error during search:", err);
       toast.error("Lỗi khi tìm kiếm");
     } finally {
@@ -315,35 +315,58 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
             <FormField
               control={form.control}
               name="nameTable"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Table database</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={(value) => {
-                        field.onChange(value); // Cập nhật form state nếu dùng react-hook-form
-                        fetchData2(value); // Gọi API để lấy danh sách column
-                      }}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn table" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {optionTable.map((opt) => (
-                          <SelectItem value={opt.tableName}>
-                            {opt.tableName}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const [open, setOpen] = useState(false);
+                return (
+                  <FormItem>
+                    <FormLabel>Table database</FormLabel>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="w-full justify-between"
+                          >
+                            {field.value || "Chọn table"}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Tìm table..." />
+                          <CommandList>
+                            {optionTable.map((opt) => (
+                              <CommandItem
+                                key={opt.tableName}
+                                value={opt.tableName}
+                                onSelect={(val: string) => {
+                                  field.onChange(val);
+                                  fetchData2(val);
+                                  setOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === opt.tableName
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {opt.tableName}
+                              </CommandItem>
+                            ))}
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
-
-          
 
             <FormItem>
               <FormLabel>Thêm trường tìm kiếm</FormLabel>
@@ -358,38 +381,46 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
                   </PopoverTrigger>
                   <PopoverContent className="w-[250px] max-h-[300px] overflow-y-auto">
                     <div className="flex flex-col gap-2">
-                      {nameColumns.map((opt) => {
-                        const column = opt || ""; // ép an toàn về string
+                      {/* Ô tìm kiếm trường */}
+                      <input
+                        type="text"
+                        placeholder="Tìm trường..."
+                        className="border p-1 rounded text-sm"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
 
-                        return (
-                          <label
-                            key={column.columnName}
-                            className="flex items-center gap-2"
-                          >
-                            <input
-                              type="checkbox"
-                              value={String(
-                                column.columnName + "**" + column.dataType || ""
-                              )}
-                              checked={selectedFields.includes(
-                                String(
-                                  column.columnName + "**" + column.dataType ||
-                                    ""
-                                )
-                              )}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                setSelectedFields((prev) =>
-                                  prev.includes(value)
-                                    ? prev.filter((v) => v !== value)
-                                    : [...prev, value]
-                                );
-                              }}
-                            />
-                            <span>{String(column.columnName || "")}</span>
-                          </label>
-                        );
-                      })}
+                      {/* Danh sách trường đã lọc */}
+                      {nameColumns
+                        .filter((opt) =>
+                          String(opt.columnName)
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        )
+                        .map((column) => {
+                          const value = `${column.columnName}**${column.dataType}`;
+                          return (
+                            <label
+                              key={column.columnName}
+                              className="flex items-center gap-2"
+                            >
+                              <input
+                                type="checkbox"
+                                value={value}
+                                checked={selectedFields.includes(value)}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setSelectedFields((prev) =>
+                                    prev.includes(val)
+                                      ? prev.filter((v) => v !== val)
+                                      : [...prev, val]
+                                  );
+                                }}
+                              />
+                              <span>{column.columnName}</span>
+                            </label>
+                          );
+                        })}
                     </div>
                   </PopoverContent>
                 </Popover>
@@ -480,8 +511,6 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
                                       : [...prev, value]
                                   );
                                 }}
-
-                       
                               />
                               <span>{column.columnName}</span>
                             </label>
@@ -494,8 +523,6 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
               </FormControl>
               <FormMessage />
             </FormItem>
-
-     
           </div>
           <div className="flex flex-wrap gap-6 ml-5">
             {selectedFields.map((field) => {
@@ -582,48 +609,53 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
             })}
           </div>
 
-         
           <Button type="submit" disabled={isLoading}>
             {" "}
             {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}
           </Button>
 
-      
-   
-    
-          <span>     </span>
-                 <Button   type="button"
-  onClick={() => setOpenConfirm(true)}
-  disabled={isLoadingExcel}>
-              {" "}
+          <span> </span>
+          <Button
+            type="button"
+            onClick={() => setOpenConfirm(true)}
+            disabled={isLoadingExcel}
+          >
+            {" "}
             {isLoadingExcel ? "Đang tạo..." : "Excel"}
           </Button>
           {/* <Button type="button" onClick={handleExportToExcel}>
             Excel
           </Button> */}
-      <TooltipProvider>
-      <div className="flex items-center space-x-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {/* Quan trọng: asChild để Switch vẫn hoạt động */}
-            <div>
-              <Switch
-                id="airplane-mode"
-                checked={removeDuplicate}
-                onCheckedChange={setRemoveDuplicate}
-              />
+          <TooltipProvider>
+            <div className="flex items-center space-x-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {/* Quan trọng: asChild để Switch vẫn hoạt động */}
+                  <div>
+                    <Switch
+                      id="airplane-mode"
+                      checked={removeDuplicate}
+                      onCheckedChange={setRemoveDuplicate}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    Loại bỏ trùng lặp tờ khai(chỉ áp dụng cho nhập khẩu hoặc
+                    xuất khẩu (sotk, so_to_khai)) , tờ khai có 12 chữ số, 11 chữ
+                    số đầu là giống nhau, chữ số cuối (thứ 12) là khác nhau. Nếu
+                    trường hợp này xảy ra thì lựa chọn (Lọc) lấy theo số lớn
+                    nhất. Ví dụ: 100000000001 và 10000000000 thì lấy số tờ khai
+                    có đuôi số 1. Số tờ khai chỉnh sửa lớn nhất là số thứ 9.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+              <label htmlFor="airplane-mode">Remove Duplicate</label>
             </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Loại bỏ trùng lặp tờ khai(chỉ áp dụng cho nhập khẩu hoặc xuất khẩu (sotk, so_to_khai)) , tờ khai có 12 chữ số, 11 chữ số đầu là giống nhau, chữ số cuối (thứ 12) là khác nhau. Nếu trường hợp này xảy ra thì lựa chọn (Lọc) lấy theo số lớn nhất. Ví dụ: 100000000001 và 10000000000 thì lấy số tờ khai có đuôi số 1. Số tờ khai chỉnh sửa lớn nhất là số thứ  9.</p>
-          </TooltipContent>
-        </Tooltip>
-        <label htmlFor="airplane-mode">Remove Duplicate</label>
-      </div>
-    </TooltipProvider>
-      </form>
+          </TooltipProvider>
+        </form>
       </Form>
-      <PaginationControls table={table}  data={data}/>
+      <PaginationControls table={table} data={data} />
 
       <MyTableBill
         {...{
@@ -633,30 +665,33 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
         }}
       />
 
-
- <ConfirmDialog
-  open={openConfirm}
-  onOpenChange={setOpenConfirm}
-  title={
-    <span>
-      Bạn chắc chắn export{" "}
-      <span className="text-red-600 font-semibold">
-        {data?.data?.total?.toLocaleString()} 
-      </span>{" "}
-      kết quả tìm kiếm?
-    </span>
-  }
-  description="Hành động này không thể hoàn tác, phải chờ một chút để hệ thống xử lý dữ liệu, phải ấn Tìm kiếm trước khi export excel"
-  onConfirm={() => exportExcel(form.getValues())}
-/>
-
-
+      <ConfirmDialog
+        open={openConfirm}
+        onOpenChange={setOpenConfirm}
+        title={
+          <span>
+            Bạn chắc chắn export{" "}
+            <span className="text-red-600 font-semibold">
+              {data?.data?.total?.toLocaleString()}
+            </span>{" "}
+            kết quả tìm kiếm?
+          </span>
+        }
+        description="Hành động này không thể hoàn tác, phải chờ một chút để hệ thống xử lý dữ liệu, phải ấn Tìm kiếm trước khi export excel"
+        onConfirm={() => exportExcel(form.getValues())}
+      />
     </>
   );
 }
 
 // Pagination controls component
-function PaginationControls({ table, data }: { table: Table<any>; data?: any }) {
+function PaginationControls({
+  table,
+  data,
+}: {
+  table: Table<any>;
+  data?: any;
+}) {
   return (
     <div className="flex flex-wrap items-center gap-1 mt-1">
       <Button
@@ -749,8 +784,6 @@ function mapFiltered(selectedFields: string[], data: Record<string, any>) {
     return acc;
   }, {} as Record<string, any>);
 }
-
-
 
 function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
   return Object.fromEntries(
