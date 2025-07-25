@@ -43,6 +43,8 @@ import { generateColumnsFromMeta } from "@/src/util/generateColumnsFromMeta";
 import { isEqual, set } from "lodash";
 import Header from "@/components/header";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function dashboard() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -53,6 +55,9 @@ export default function dashboard() {
   const [allColumns, setAllColumns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingExcel, setIsLoadingExcel] = useState(false);
+    const [removeDuplicate, setRemoveDuplicate] = useState(false);
+
+  
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -108,21 +113,7 @@ export default function dashboard() {
       return acc;
     }, {});
 
-    // const res = await axios.post(
-    //   "http://localhost:8080/api/excel_search", // URL
-    //   filterParams, // Body (filters sẽ được gửi trong body của POST request)
-    //   {
-    //     params: {
-    //       // Query params (page, size)
-    //       page: pageIndex,
-    //       size: pageSize,
-    //     },
-    //   }
-    // );
 
-    // setData(res.data);
-
-    // return res.data; // Giả định là { content: [], totalPages, totalElements }
   };
 
   useEffect(() => {
@@ -203,15 +194,9 @@ export default function dashboard() {
 
   const FormSchema = z
     .object({
-      // username: z.string(),
-      // dateDK: z.string(),
-      // mahq: z.string(),
-      // hsCode: z.string(),
-      // numKQ: z.string().nonempty("This is required"),
+ 
       nameTable: z.string(),
-      // typeTable: z.string(),
-      // orderBy: z.string(),
-      // typeTableSearch: z.string().optional(),
+ 
     })
     .catchall(z.string().optional());
 
@@ -220,11 +205,7 @@ export default function dashboard() {
     defaultValues: {
       // username: "",
       // dateDK: "",
-      // mahq: "",
-      // hsCode: "",
-      // numKQ: "1000",
-      // typeTable: "",
-      // typeTableSearch: "",
+
     },
   });
 
@@ -241,6 +222,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       selectedFields: selectedFieldsView,
       filtered: cleaned,
       order: selectedFieldsOrder,
+      removeDuplicate: removeDuplicate,
     };
 
     const response = await fetch(`${API}/api/bill_search1/export`, {
@@ -299,7 +281,6 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
 
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
-      console.log("fffffffffffffffffff");
 
       console.error("Error during search:", err);
       toast.error("Lỗi khi tìm kiếm");
@@ -359,33 +340,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
               )}
             />
 
-            {/* <FormField
-              control={form.control}
-              name="typeTable"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Loại bảng</FormLabel>
-                  <FormControl>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn loại bảng" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {typeOptionsTable.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+          
 
             <FormItem>
               <FormLabel>Thêm trường tìm kiếm</FormLabel>
@@ -523,15 +478,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
                                   );
                                 }}
 
-                                // onChange={(e) => {
-                                //   const value = e.target.value;
-
-                                //   // Nếu click chọn -> chỉ chọn giá trị đó, bỏ các cái khác
-                                //   // Nếu click bỏ chọn -> set về []
-                                //   setSelectedFieldsOrder((prev) =>
-                                //     prev.includes(value) ? [] : [value]
-                                //   );
-                                // }}
+                       
                               />
                               <span>{column.columnName}</span>
                             </label>
@@ -545,23 +492,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
               <FormMessage />
             </FormItem>
 
-            {/* <FormField
-              control={form.control}
-              name="numKQ"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Giới hạn tìm kiếm</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Gioi han so luong tim kiem"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
+     
           </div>
           <div className="flex flex-wrap gap-6 ml-5">
             {selectedFields.map((field) => {
@@ -648,178 +579,15 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
             })}
           </div>
 
-          {/* <div className="flex flex-wrap gap-6 ml-5">
-            {selectedFields.map((field) => {
-              const [fieldName, rawType] = field.split("**");
-              const dataType = rawType?.toLowerCase() || "";
-              let inputType = "text";
-
-              const isDateType =
-                dataType.includes("date") || dataType.includes("time");
-
-              if (isDateType) {
-                inputType = "date";
-                return (
-                  <React.Fragment key={fieldName}>
-                    <FormField
-                      control={form.control}
-                      name={`${fieldName}_from`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{fieldName} từ</FormLabel>
-                          <FormControl>
-                            <Input
-                              type={inputType}
-                              {...field}
-                              placeholder={`Từ ngày ${fieldName}`}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`${fieldName}_to`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>{fieldName} đến</FormLabel>
-                          <FormControl>
-                            <Input
-                              type={inputType}
-                              {...field}
-                              placeholder={`Đến ngày ${fieldName}`}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </React.Fragment>
-                );
-              } else {
-                // Non-date fields
-                if (
-                  dataType.includes("int") ||
-                  dataType.includes("decimal") ||
-                  dataType.includes("float") ||
-                  dataType.includes("double")
-                ) {
-                  inputType = "number";
-                }
-
-                return (
-                  <FormField
-                    key={fieldName}
-                    control={form.control}
-                    name={fieldName}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{fieldName}</FormLabel>
-                        <FormControl>
-                          <Input
-                            type={inputType}
-                            {...field}
-                            placeholder={`Nhập ${fieldName}`}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                );
-              }
-            })}
-          </div> */}
-
-          {/* <div className="flex flex-wrap gap-6 ml-5">
-            <FormField
-              control={form.control}
-              name="dateDK"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NgayDK từ </FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="yyyy/mm/dd-yyyy/mm/dd"
-                      type="date"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dateDK"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>NgayDK đến</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="yyyy/mm/dd-yyyy/mm/dd"
-                      type="date"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-
-            <FormField
-              control={form.control}
-              name="hsCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>HS code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="ma hang hoa" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="username"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Vận đơn 01</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Số vận đơn 01 " {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="mahq"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>MAHQ</FormLabel>
-                  <FormControl>
-                    <Input placeholder="ma hai quan" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div> */}
+         
           <Button type="submit" disabled={isLoading}>
             {" "}
             {isLoading ? "Đang tìm kiếm..." : "Tìm kiếm"}
           </Button>
+
+      
+   
+    
           <span>     </span>
                  <Button   type="button"
   onClick={() => setOpenConfirm(true)}
@@ -830,7 +598,27 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
           {/* <Button type="button" onClick={handleExportToExcel}>
             Excel
           </Button> */}
-        </form>
+      <TooltipProvider>
+      <div className="flex items-center space-x-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {/* Quan trọng: asChild để Switch vẫn hoạt động */}
+            <div>
+              <Switch
+                id="airplane-mode"
+                checked={removeDuplicate}
+                onCheckedChange={setRemoveDuplicate}
+              />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Loại bỏ trùng lặp tờ khai, tờ khai có 12 chữ số, 11 chữ số đầu là giống nhau, chữ số cuối (thứ 12) là khác nhau. Nếu trường hợp này xảy ra thì lựa chọn (Lọc) lấy theo số lớn nhất. Ví dụ: 100000000001 và 10000000000 thì lấy số tờ khai có đuôi số 1. Số tờ khai chỉnh sửa lớn nhất là số thứ  9.</p>
+          </TooltipContent>
+        </Tooltip>
+        <label htmlFor="airplane-mode">Remove Duplicate</label>
+      </div>
+    </TooltipProvider>
+      </form>
       </Form>
       <PaginationControls table={table}  data={data}/>
 
@@ -959,20 +747,7 @@ function mapFiltered(selectedFields: string[], data: Record<string, any>) {
   }, {} as Record<string, any>);
 }
 
-// function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
-//   return Object.fromEntries(
-//     Object.entries(obj).filter(([_, value]) => {
-//       // Giữ nếu không phải object (string, number, boolean, v.v.)
-//       if (typeof value !== 'object' || value === null) return true;
 
-//       // Nếu là object, kiểm tra from/to có giá trị không rỗng
-//       const hasValidFrom = 'from' in value && value.from != null && value.from !== '';
-//       const hasValidTo = 'to' in value && value.to != null && value.to !== '';
-
-//       return hasValidFrom || hasValidTo;
-//     })
-//   );
-// }
 
 function cleanFilterObject(obj: Record<string, any>): Record<string, any> {
   return Object.fromEntries(
