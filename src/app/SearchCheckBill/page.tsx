@@ -268,6 +268,8 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
         selectedFields: selectedFieldsView,
         filtered: cleaned,
         order: selectedFieldsOrder,
+        removeDuplicate: removeDuplicate,
+
       };
 
       const response = await axios.post(
