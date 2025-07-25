@@ -55,7 +55,9 @@ export default function dashboard() {
   const [allColumns, setAllColumns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingExcel, setIsLoadingExcel] = useState(false);
-    const [removeDuplicate, setRemoveDuplicate] = useState(false);
+  const [removeDuplicate, setRemoveDuplicate] = useState(false);
+  const [duplicateColumn, setDuplicateColumn] = useState(null);
+
 
   
 
@@ -182,15 +184,7 @@ export default function dashboard() {
     []
   );
 
-  const typeOptionsTable = [
-    { label: "Nhập khẩu", value: "nhapKhau" },
-    { label: "Xuất khẩu", value: "xuatKhau" },
-    { label: "SeawayMasterBill", value: "SeawayMasterBill" },
-    { label: "SeawayHouseBill", value: "SeawayHouseBill" },
-    { label: "AirMasterBill", value: "AirMasterBill" },
-    { label: "AirHouseBill", value: "AirHouseBill" },
-    { label: "Vận Đơn", value: "VanDon" },
-  ];
+
 
   const FormSchema = z
     .object({
@@ -217,12 +211,17 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       const filtered = mapFiltered(fieldNames, data);
     const cleaned = cleanFilterObject(filtered);
 
+    const duplicateColumn2= nameColumns.find((col) => col.columnName === 'sotk' || col.columnName === 'so_to_khai');
+
     const payload = {
         nameTable: data.nameTable,
       selectedFields: selectedFieldsView,
       filtered: cleaned,
       order: selectedFieldsOrder,
       removeDuplicate: removeDuplicate,
+      duplicateColumn: duplicateColumn2?.columnName ?? null
+
+  
     };
 
     const response = await fetch(`${API}/api/bill_search1/export`, {
@@ -260,6 +259,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
       const filtered = mapFiltered(fieldNames, data);
 
       const cleaned = cleanFilterObject(filtered);
+        const duplicateColumn2= nameColumns.find((col) => col.columnName === 'sotk' || col.columnName === 'so_to_khai');
 
       let payload2 = {
         nameTable: data.nameTable,
@@ -269,6 +269,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
         filtered: cleaned,
         order: selectedFieldsOrder,
         removeDuplicate: removeDuplicate,
+        duplicateColumn: duplicateColumn2?.columnName ?? null
 
       };
 
@@ -614,7 +615,7 @@ const exportExcel = async ( data: z.infer<typeof FormSchema>) => {
             </div>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Loại bỏ trùng lặp tờ khai, tờ khai có 12 chữ số, 11 chữ số đầu là giống nhau, chữ số cuối (thứ 12) là khác nhau. Nếu trường hợp này xảy ra thì lựa chọn (Lọc) lấy theo số lớn nhất. Ví dụ: 100000000001 và 10000000000 thì lấy số tờ khai có đuôi số 1. Số tờ khai chỉnh sửa lớn nhất là số thứ  9.</p>
+            <p>Loại bỏ trùng lặp tờ khai(chỉ áp dụng cho nhập khẩu hoặc xuất khẩu (sotk, so_to_khai)) , tờ khai có 12 chữ số, 11 chữ số đầu là giống nhau, chữ số cuối (thứ 12) là khác nhau. Nếu trường hợp này xảy ra thì lựa chọn (Lọc) lấy theo số lớn nhất. Ví dụ: 100000000001 và 10000000000 thì lấy số tờ khai có đuôi số 1. Số tờ khai chỉnh sửa lớn nhất là số thứ  9.</p>
           </TooltipContent>
         </Tooltip>
         <label htmlFor="airplane-mode">Remove Duplicate</label>
