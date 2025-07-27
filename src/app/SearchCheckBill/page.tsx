@@ -73,7 +73,8 @@ export default function dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingExcel, setIsLoadingExcel] = useState(false);
   const [removeDuplicate, setRemoveDuplicate] = useState(false);
-  const [duplicateColumn, setDuplicateColumn] = useState(null);
+  const [datacheck, setDatacheck] = useState<any | null>(null);
+  const [datacheckLoading, setDatacheckLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -84,6 +85,8 @@ export default function dashboard() {
   const [data, setData] = useState<any | null>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [payload, setPayload] = useState<any>(null);
+   const [top, setTop] = useState(5);
+  const [asc, setAsc] = useState(false);
 
   // const host = window.location.hostname;
 
@@ -300,13 +303,14 @@ export default function dashboard() {
     async function checkThongKe() {
 
     try {
+      setDatacheckLoading(true); // Bật
  
 
       let payload3 = {
         ...payload,
         typeCheck: "thongke",
-        top:5,
-        asc: true,
+        top: top,
+        asc: asc,
       };
 
       const response = await axios.post(
@@ -314,14 +318,15 @@ export default function dashboard() {
         payload3
       );
 
+      setDatacheck(response.data);
       // Gửi dữ liệu kết quả sang bảng
 
-console.log(response.data);
       toast.success("Tìm kiếm thành công!");
     } catch (err) {
       console.error("Error during search:", err);
       toast.error("Lỗi khi tìm kiếm");
     } finally {
+      setDatacheckLoading(false); // Tắt loading dù thành công hay thất bại
     }
   }
 
@@ -706,29 +711,77 @@ Kim ngạch {Number(data?.data?.trihoadon || 0).toLocaleString("en-US", {
 })}      </span>
 
       <Header title="Thống kê"></Header>
-      <Button onClick={() => checkThongKe()}>Check</Button>
+       <Button onClick={checkThongKe} disabled={datacheckLoading}>
+        {datacheckLoading ? "Đang kiểm tra..." : "Check"}
+      </Button>
+      {/* Nhập số lượng top */}
+   
+        <label className=" font-medium mb-1">Số lượng top (tối đa 500):</label>
+        <input
+          type="number"
+          className="border px-3 py-1 rounded-md w-full max-w-[120px]"
+          value={top}
+          onChange={(e) => {
+            const value = Math.min(Number(e.target.value), 500);
+            setTop(value);
+          }}
+          min={1}
+          max={500}
+          placeholder="Nhập số top"
+        />
+ 
+
+
+
+      {/* Chọn chiều sắp xếp */}
+    
+        <label className=" font-medium mb-1">Sắp xếp:</label>
+          <label className=" items-center space-x-1">
+            <input
+              type="radio"
+              value="asc"
+              checked={asc === true}
+              onChange={() => setAsc(true)}
+            />
+            <span>Tăng dần</span>
+          </label>
+          <label className=" items-center space-x-1">
+            <input
+              type="radio"
+              value="desc"
+              checked={asc === false}
+              onChange={() => setAsc(false)}
+            />
+            <span>Giảm dần</span>
+          </label>
+   
+
+      {/* Debug hiển thị giá trị đã chọn (tùy chọn) */}
+      {/* <pre>{JSON.stringify({ top, asc, typeCheck }, null, 2)}</pre> */}
+ 
+
       <DynamicTable
         title="Kim ngạch theo mã số thuế"
-        columns={generateColumns(data?.data?.top5codethue || [])}
-        data={data?.data?.top5codethue || []}
+        columns={generateColumns(datacheck?.top5codethue || [])}
+        data={datacheck?.top5codethue || []}
       />
 
            <DynamicTable
            title="Kim ngạch theo mã số loại hình"
-        columns={generateColumns(data?.data?.top5totalMaLoaiHinh || [])}
-        data={data?.data?.top5totalMaLoaiHinh || []}
+        columns={generateColumns(datacheck?.top5totalMaLoaiHinh || [])}
+        data={datacheck?.top5totalMaLoaiHinh || []}
       />
 
               <DynamicTable
         title="Kim ngạch theo mã số hàng hóa"
-        columns={generateColumns(data?.data?.top5totalmaHScode || [])}
-        data={data?.data?.top5totalmaHScode || []}
+        columns={generateColumns(datacheck?.top5totalmaHScode || [])}
+        data={datacheck?.top5totalmaHScode || []}
       />
 
               <DynamicTable
         title="Kim ngạch theo mã số tờ khai"
-        columns={generateColumns(data?.data?.top5totalmaSotk || [])}
-        data={data?.data?.top5totalmaSotk || []}
+        columns={generateColumns(datacheck?.top5totalmaSotk || [])}
+        data={datacheck?.top5totalmaSotk || []}
       />
 
       <ConfirmDialog
