@@ -60,6 +60,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import DynamicTable from "./SimpleTable";
 
 export default function dashboard() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -668,6 +669,17 @@ export default function dashboard() {
 
 
        <Header title="Thống kê"></Header>
+
+       <DynamicTable
+         columns={[
+           { key: "id", label: "ID" },
+           { key: "name", label: "Họ tên" },
+           { key: "age", label: "Tuổi" },
+           { key: "email", label: "Email" },
+         ]}
+        data={data?.data || []} // DÙNG || [] để tránh undefined
+
+       />
 
       <ConfirmDialog
         open={openConfirm}
