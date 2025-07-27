@@ -40,6 +40,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import {
+  Column,
   ColumnDef,
   getCoreRowModel,
   PaginationState,
@@ -83,8 +84,9 @@ export default function dashboard() {
   const [data, setData] = useState<any | null>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
 
-  const host = window.location.hostname;
-  const API = `http://${host}:8080`;
+  // const host = window.location.hostname;
+
+  const API = `http://localhost:8080`;
 
   useEffect(() => {
     if (selectedFieldsView.length === 0) {
@@ -656,7 +658,7 @@ export default function dashboard() {
           </TooltipProvider>
         </form>
       </Form>
-      <PaginationControls table={table} data={data} /> 
+      <PaginationControls table={table} data={data} />
 
       <MyTableBill
         {...{
@@ -665,21 +667,36 @@ export default function dashboard() {
           columns,
         }}
       />
-            <span className="ml-2 text-sm ">kim ngạch xuất khẩu: {data?.data?.total}4343</span>
+      <span className="ml-2 text-sm bg-orange-200">
+Kim ngạch {Number(data?.data?.trihoadon || 0).toLocaleString("en-US", {
+  maximumFractionDigits: 3
+})}      </span>
 
+      <Header title="Thống kê"></Header>
 
-       <Header title="Thống kê"></Header>
+      <DynamicTable
+        title="Kim ngạch theo mã số thuế"
+        columns={generateColumns(data?.data?.top5codethue || [])}
+        data={data?.data?.top5codethue || []}
+      />
 
-       <DynamicTable
-         columns={[
-           { key: "id", label: "ID" },
-           { key: "name", label: "Họ tên" },
-           { key: "age", label: "Tuổi" },
-           { key: "email", label: "Email" },
-         ]}
-        data={data?.data || []} // DÙNG || [] để tránh undefined
+           <DynamicTable
+           title="Kim ngạch theo mã số loại hình"
+        columns={generateColumns(data?.data?.top5totalMaLoaiHinh || [])}
+        data={data?.data?.top5totalMaLoaiHinh || []}
+      />
 
-       />
+              <DynamicTable
+        title="Kim ngạch theo mã số hàng hóa"
+        columns={generateColumns(data?.data?.top5totalmaHScode || [])}
+        data={data?.data?.top5totalmaHScode || []}
+      />
+
+              <DynamicTable
+        title="Kim ngạch theo mã số tờ khai"
+        columns={generateColumns(data?.data?.top5totalmaSotk || [])}
+        data={data?.data?.top5totalmaSotk || []}
+      />
 
       <ConfirmDialog
         open={openConfirm}
@@ -777,11 +794,15 @@ function PaginationControls({
         </SelectContent>
       </Select>
       <span className="ml-2 text-sm  ">Kết quả: {data?.data?.total}</span>
-      <span className="ml-2 text-sm bg-orange-200">Tổng  tờ khai: {data?.data?.total}5656454</span>
-      <span className="ml-2 text-sm bg-yellow-200 ">Doanh nghiệp: {data?.data?.total}4343</span>
-      <span className="ml-2 text-sm bg-lime-200 ">Doanh nghiệp trọng điểm: {data?.data?.total}4343</span>
-
-
+      <span className="ml-2 text-sm bg-orange-200">
+        Tổng tờ khai: {data?.data?.totalUniqueSoToKhaiSql}
+      </span>
+      <span className="ml-2 text-sm bg-yellow-200 ">
+        Doanh nghiệp: {data?.data?.distinctList?.length || 0}
+      </span>
+      <span className="ml-2 text-sm bg-lime-200 ">
+        Doanh nghiệp trọng điểm: {data?.data?.total}
+      </span>
     </div>
   );
 }
@@ -835,4 +856,20 @@ function filterSelectedFields(
   return allFields.filter((field) =>
     selectedFieldsView.includes(field.columnName)
   );
+}
+
+function generateColumns(data: Record<string, any>[]): any[] {
+  if (!data || data.length === 0) return [];
+
+  return Object.keys(data[0])
+    .filter((key) => key !== "id") // bỏ cột id nếu muốn
+    .map((key) => ({
+      accessorKey: key,
+      header: formatLabel(key), // tạo label đẹp hơn nếu muốn
+    }));
+}
+
+// Tùy chọn: chuyển snake_case -> Label Case
+function formatLabel(key: string): string {
+  return key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
