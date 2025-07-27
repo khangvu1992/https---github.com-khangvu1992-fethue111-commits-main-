@@ -83,6 +83,7 @@ export default function dashboard() {
 
   const [data, setData] = useState<any | null>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [payload, setPayload] = useState<any>(null);
 
   // const host = window.location.hostname;
 
@@ -276,6 +277,7 @@ export default function dashboard() {
         removeDuplicate: removeDuplicate,
         duplicateColumn: duplicateColumn2?.columnName ?? null,
       };
+      setPayload(payload2);
 
       const response = await axios.post(
         `${API}/api/bill_search1/find`,
@@ -292,6 +294,34 @@ export default function dashboard() {
       toast.error("Lỗi khi tìm kiếm");
     } finally {
       setIsLoading(false); // 👉 tắt loading dù thành công hay thất bại
+    }
+  }
+
+    async function checkThongKe() {
+
+    try {
+ 
+
+      let payload3 = {
+        ...payload,
+        typeCheck: "thongke",
+        top:5,
+        asc: true,
+      };
+
+      const response = await axios.post(
+        `${API}/api/bill_search1/findCheck`,
+        payload3
+      );
+
+      // Gửi dữ liệu kết quả sang bảng
+
+console.log(response.data);
+      toast.success("Tìm kiếm thành công!");
+    } catch (err) {
+      console.error("Error during search:", err);
+      toast.error("Lỗi khi tìm kiếm");
+    } finally {
     }
   }
 
@@ -370,6 +400,9 @@ export default function dashboard() {
                 );
               }}
             />
+
+
+            
 
             <FormItem>
               <FormLabel>Thêm trường tìm kiếm</FormLabel>
@@ -673,7 +706,7 @@ Kim ngạch {Number(data?.data?.trihoadon || 0).toLocaleString("en-US", {
 })}      </span>
 
       <Header title="Thống kê"></Header>
-
+      <Button onClick={() => checkThongKe()}>Check</Button>
       <DynamicTable
         title="Kim ngạch theo mã số thuế"
         columns={generateColumns(data?.data?.top5codethue || [])}
