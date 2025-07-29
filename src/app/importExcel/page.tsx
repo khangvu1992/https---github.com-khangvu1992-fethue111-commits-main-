@@ -23,8 +23,8 @@ export default function ImportExcel() {
   const [loading, setLoading] = useState(true); // State for loading status
   const [error, setError] = useState(""); // State for error handling
   const [duplicate, setDuplicate] = useState(""); // State for error handling
-    const host = window.location.hostname;
-  const API = `http://${host}:8080`;
+
+  const API = `http://localhost:8080`;
 
 
   const fetchFiles = async () => {

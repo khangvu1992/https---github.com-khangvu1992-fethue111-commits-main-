@@ -1,4 +1,4 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
+import { Calendar, Home, Inbox, List, Search, Settings } from "lucide-react"
 
 import {
   Sidebar,
@@ -67,6 +67,13 @@ const items = [
     title: "Import File",
     url: "/importFile",
     icon: Inbox,
+  },
+
+  
+    {
+    title: "Danh Mục",
+    url: "/list",
+    icon: List,
   },
   // {
   //   title: "Calendar",
