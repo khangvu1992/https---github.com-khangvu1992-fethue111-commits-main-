@@ -11,10 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface TuyenDuong {
   cuaKhauDi: string;
   cuaKhauDen: string;
+  moTa: string;
 }
 
 export default function TuyenDuongTrongDiem() {
@@ -25,15 +27,18 @@ export default function TuyenDuongTrongDiem() {
   const [form, setForm] = useState<TuyenDuong>({
     cuaKhauDi: "",
     cuaKhauDen: "",
+    moTa: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleLuuTay = () => {
     setDanhSach([...danhSach, form]);
-    setForm({ cuaKhauDi: "", cuaKhauDen: "" });
+    setForm({ cuaKhauDi: "", cuaKhauDen: "", moTa: "" });
     setOpenThemTay(false);
   };
 
@@ -51,6 +56,7 @@ export default function TuyenDuongTrongDiem() {
       const parsed: TuyenDuong[] = json.map((row: any) => ({
         cuaKhauDi: row.cuaKhauDi || "",
         cuaKhauDen: row.cuaKhauDen || "",
+        moTa: row.moTa || "",
       }));
 
       setDanhSach([...danhSach, ...parsed]);
@@ -65,6 +71,7 @@ export default function TuyenDuongTrongDiem() {
       {
         cuaKhauDi: "Hữu Nghị",
         cuaKhauDen: "Móng Cái",
+        moTa: "Tuyến đường chính qua biên giới phía Bắc",
       },
     ];
 
@@ -86,16 +93,22 @@ export default function TuyenDuongTrongDiem() {
           <DialogContent>
             <DialogTitle>Thêm tuyến đường thủ công</DialogTitle>
             <div className="space-y-3">
-              <Label>Mã Cửa khẩu đi</Label>
+              <Label>Cửa khẩu đi</Label>
               <Input
                 name="cuaKhauDi"
                 value={form.cuaKhauDi}
                 onChange={handleChange}
               />
-              <Label>Mã Cửa khẩu đến</Label>
+              <Label>Cửa khẩu đến</Label>
               <Input
                 name="cuaKhauDen"
                 value={form.cuaKhauDen}
+                onChange={handleChange}
+              />
+              <Label>Mô tả</Label>
+              <Textarea
+                name="moTa"
+                value={form.moTa}
                 onChange={handleChange}
               />
               <Button onClick={handleLuuTay}>Lưu</Button>
@@ -130,11 +143,15 @@ export default function TuyenDuongTrongDiem() {
         <h3 className="font-bold mb-2">
           Danh sách tuyến đường trọng điểm đã thêm:
         </h3>
-        <ul className="space-y-1 text-sm">
+        <ul className="space-y-2 text-sm">
           {danhSach.map((item, idx) => (
-            <li key={idx}>
-              <strong>{item.cuaKhauDi}</strong> →{" "}
-              <strong>{item.cuaKhauDen}</strong>
+            <li key={idx} className="border p-2 rounded-md">
+              <div>
+                <strong>
+                  {item.cuaKhauDi} → {item.cuaKhauDen}
+                </strong>
+              </div>
+              <div>{item.moTa}</div>
             </li>
           ))}
         </ul>
