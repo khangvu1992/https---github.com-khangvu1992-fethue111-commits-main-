@@ -900,10 +900,10 @@ function PaginationControls({
             Tổng tờ khai: {data?.data?.totalUniqueSoToKhaiSql}
           </span>
           <span className="ml-2 text-sm bg-yellow-200 ">
-            Doanh nghiệp: {data?.data?.distinctList?.length || 0}
+            Doanh nghiệp: {data?.data?.taxCodeListcongty?.length || 0}
           </span>
           <span className="ml-2 text-sm bg-lime-200 ">
-            Doanh nghiệp trọng điểm: {data?.data?.total}
+            Doanh nghiệp trọng điểm: {data?.data?.distinctList.length||0}
           </span>
         </>
       )}
