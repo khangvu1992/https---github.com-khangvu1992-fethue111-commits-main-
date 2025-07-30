@@ -80,7 +80,7 @@ export default function DoanhNghiepTrongDiemManager() {
           </Button>
           <Button
             size="sm"
-            variant="destructive"
+            className="bg-blue-300 text-white hover:bg-red-600"
             onClick={() => handleDelete(dn.maSoThue)}
           >
             🗑️ Xóa

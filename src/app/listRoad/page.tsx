@@ -20,6 +20,7 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
+import Header from "@/components/header";
 
 interface TuyenDuong {
   cuaKhauDi: string;
@@ -52,7 +53,8 @@ export default function TuyenDuongTrongDiemManager() {
         return (
           <div className="space-x-2">
             <Button size="sm" onClick={() => handleEdit(td)}>✏️ Sửa</Button>
-            <Button size="sm" variant="destructive" onClick={() => handleDelete(td)}>🗑️ Xóa</Button>
+            <Button size="sm"             className="bg-blue-300 text-white hover:bg-red-600"
+ onClick={() => handleDelete(td)}>🗑️ Xóa</Button>
           </div>
         );
       },
@@ -165,8 +167,10 @@ export default function TuyenDuongTrongDiemManager() {
   };
 
   return (
-    <div className="p-4">
-      <div className="space-x-4 mb-6">
+    <div >
+                    <Header title="Tuyến đường trọng điểm"></Header>
+
+      <div className="space-x-4 mb-6 p-4">
         <Dialog open={openThemTay} onOpenChange={(open) => {
           setOpenThemTay(open);
           if (!open) resetForm();

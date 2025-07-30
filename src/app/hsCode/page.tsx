@@ -21,6 +21,7 @@ import {
   flexRender,
   ColumnDef,
 } from "@tanstack/react-table";
+import Header from "@/components/header";
 
 interface HsCode {
   maHs: string;
@@ -49,7 +50,7 @@ export default function HsCodeTrongDiemManager() {
             <Button size="sm" onClick={() => handleEdit(item)}>✏️ Sửa</Button>
             <Button
               size="sm"
-              variant="destructive"
+            className="bg-blue-300 text-white hover:bg-red-600"
               onClick={() => handleDelete(item.maHs)}
             >
               🗑️ Xóa
@@ -152,8 +153,10 @@ export default function HsCodeTrongDiemManager() {
   };
 
   return (
-    <div className="p-4">
-      <div className="space-x-4 mb-6">
+    <div >
+                    <Header title="Mã HS trọng điểm"></Header>
+
+      <div className="space-x-4 mb-6 p-4">
         {/* Nhập tay */}
         <Dialog
           open={openThemTay}

@@ -62,6 +62,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DynamicTable from "./SimpleTable";
+import DialogShowTable from "./DialogShowTable";
 
 export default function dashboard() {
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -89,6 +90,9 @@ export default function dashboard() {
   const [asc, setAsc] = useState(false);
 
   const [isNhatXuat, setIsNhatXuat] = useState<boolean>(false);
+  
+
+
 
   // const host = window.location.hostname;
 
@@ -720,6 +724,8 @@ export default function dashboard() {
         </span>
       )}
 
+
+
       {isNhatXuat && (
         <div>
           <Header title="Thống kê"></Header>
@@ -795,6 +801,7 @@ export default function dashboard() {
         </div>
       )}
 
+
       <ConfirmDialog
         open={openConfirm}
         onOpenChange={setOpenConfirm}
@@ -824,6 +831,16 @@ function PaginationControls({
   table: Table<any>;
   data?: any;
 }) {
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [openDialogHScode, setOpenDialogHScode] = useState(false);
+    const [openDialogDuongcode, setOpenDialogDuongcode] = useState(false);
+
+
+
+
+
+
   return (
     <div className="flex flex-wrap items-center gap-1 mt-1">
       <Button
@@ -902,9 +919,54 @@ function PaginationControls({
           <span className="ml-2 text-sm bg-yellow-200 ">
             Doanh nghiệp: {data?.data?.taxCodeListcongty?.length || 0}
           </span>
-          <span className="ml-2 text-sm bg-lime-200 ">
-            Doanh nghiệp trọng điểm: {data?.data?.distinctList.length||0}
+        <span
+           className="ml-2 text-sm text-blue-600 cursor-pointer underline"
+            onClick={() => setOpenDialog(true)}
+          >
+            Doanh nghiệp trọng điểm:{" "}
+            {data?.data?.distinctList?.length || 0}
           </span>
+
+              <span
+           className="ml-2 text-sm text-blue-600 cursor-pointer underline"
+            onClick={() => setOpenDialogHScode(true)}
+          >
+           HS code trọng điểm:{" "}
+            {data?.data?.listHScode?.length || 0}
+          </span>
+                 <span
+           className="ml-2 text-sm text-blue-600 cursor-pointer underline"
+            onClick={() => setOpenDialogDuongcode(true)}
+          >
+           Tuyến đường trọng điểm:{" "}
+            {data?.data?.hscodeListDuong?.length || 0}
+          </span>
+
+                   {/* Dialog hiện bảng */}
+          <DialogShowTable
+            data={data?.data?.hscodeListDuong || []}
+            open={openDialogDuongcode}
+            onOpenChange={setOpenDialogDuongcode}
+            dialogTitle="Tuyến đường trọng điểm"
+          />
+
+            {/* Dialog hiện bảng */}
+          <DialogShowTable
+            data={data?.data?.listHScode || []}
+            open={openDialogHScode}
+            onOpenChange={setOpenDialogHScode}
+            dialogTitle="Danh sách HScode trọng điểm"
+          />
+
+          {/* Dialog hiện bảng */}
+          <DialogShowTable
+            data={data?.data?.distinctList || []}
+            open={openDialog}
+            onOpenChange={setOpenDialog}
+            dialogTitle="Danh sách Doanh nghiệp trọng điểm"
+          />
+        
+   
         </>
       )}
     </div>
